@@ -1,5 +1,7 @@
 name: persfin
 dependencies:
   - yaml
+  - pip
+  - polars
   - pip:
     - streamlit-shadcn-ui
