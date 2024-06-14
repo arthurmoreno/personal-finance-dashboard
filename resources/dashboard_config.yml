@@ -1,0 +1,62 @@
+file_path: data/cleaned/transactions_in_categories_example.xlsx
+page:
+  title: Finance Dashboard
+  icon: ':bar_chart:'
+  layout: wide
+
+display_data: False
+
+time_frame_mapping:
+  Weekly: YEAR_WEEK
+  Daily: DATE
+  Monthly: YEAR_MONTH
+
+category_col_mapping:
+  Category: CATEGORY
+  Subcategory: SUBCATEGORY
+
+source_mapping:
+  Bolero: Bolero
+  Cash: Cash
+  Checkings: Checkings
+  Savings: Savings
+  Revolut: Revolut
+  Trading: Trading
+  Total: Total
+
+hidden_categories_from_barplot:
+  - INCOME
+  - TRANSFERS
+  - WAGE
+  - STARTING_BALANCE
+
+col_names:
+  AMOUNT_COL: AMOUNT
+  DATE_COL: DATE
+  SOURCE_COL: SOURCE
+  TYPE_COL: TYPE
+
+currency: € # only used for the tiles.
+
+pieplot_colors:
+  - "#16A085"
+  - "#34495E"
+  - "#D65A31"
+
+lineplot_colors:
+  Cash: "#808836"
+  Checkings: "#16A085"
+  Savings: "#7F8C8D"
+  Bolero: "#34495E"
+  Trading: "#2E4053"
+  Total: "#D65A31"
+  Revolut: "#C39BD3"
+
+lineplot_width:
+  Cash: 3
+  Checkings: 3
+  Savings: 3
+  Bolero: 3
+  Trading: 3
+  Total: 3
+  Revolut: 3
