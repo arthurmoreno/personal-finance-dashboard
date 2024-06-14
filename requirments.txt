@@ -1,3 +1,3 @@
-yaml
+PyYaml
 polars
 streamlit-shadcn-ui
