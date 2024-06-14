@@ -1,4 +1,3 @@
-name: persfin
 dependencies:
   - yaml
   - pip
