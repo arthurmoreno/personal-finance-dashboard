@@ -1,0 +1,4 @@
+name: persfin
+dependencies:
+  - yaml
+  - streamlit-shadcn-ui
