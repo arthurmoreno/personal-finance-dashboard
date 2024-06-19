@@ -1,3 +1,4 @@
 pyyaml
 polars
 streamlit-shadcn-ui
+plotly
