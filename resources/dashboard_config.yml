@@ -20,7 +20,7 @@ source_mapping:
   Cash: Cash
   Checkings: Checkings
   Savings: Savings
-  Revolut: Revolut
+  Revolut: Checkings
   Trading: Trading
   Total: Total
 
