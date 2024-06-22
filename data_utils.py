@@ -1,10 +1,10 @@
 from polars.dataframe import DataFrame
 import polars as pl
 import streamlit as st
-from ui_components import date_picker, create_tabs
 from typing import List
 from plots import PlotUtils
 from constants import *
+import streamlit_shadcn_ui as ui
 
 
 class FinanceDashboard:
@@ -113,6 +113,18 @@ class FinanceDashboard:
 
     def display_tabs(self):
         """Displays the tabs for the time frame, source and category and return their value."""
+
+        def create_tabs(mapping):
+            # Key is arbitrary here.
+            selected = ui.tabs(
+                options=mapping.keys(),
+                default_value=list(mapping.keys())[0],
+                key=list(mapping.keys())[0],
+            )
+            selected_col = mapping.get(selected)
+
+            return selected_col
+
         tabs = st.columns([3, 3, 6])
         with tabs[0]:
             time_frame_col = create_tabs(time_frame_mapping)
@@ -130,7 +142,7 @@ class FinanceDashboard:
 
     def display_date_picker(self, first_and_last_date):
         """Displays the date picker and returns the selected dates."""
-        day_start, day_end = date_picker(
+        day_start, day_end = ui.date_picker(
             key="date_picker",
             mode="range",
             label="Selected Range",
