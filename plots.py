@@ -6,9 +6,11 @@ from typing import List
 import streamlit_shadcn_ui as ui
 import polars as pl
 import altair as alt
-from constants import *
-
-# from utils import AMOUNT_COL, TYPE_COL, SOURCE_COL
+from constants import (
+    amount_col,
+    source_col,
+    type_col,
+)
 
 
 class PlotUtils:

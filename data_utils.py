@@ -3,7 +3,14 @@ import polars as pl
 import streamlit as st
 from typing import List
 from plots import PlotUtils
-from constants import *
+from constants import (
+    amount_col,
+    date_col,
+    source_col,
+    type_col,
+    time_frame_mapping,
+    category_col_mapping,
+)
 import streamlit_shadcn_ui as ui
 
 
