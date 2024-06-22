@@ -11,3 +11,7 @@ category_col_mapping = {
     "Category": "CATEGORY",
     "Subcategory": "SUBCATEGORY",
 }
+
+sample_config_path = "sample_resources/sample_dashboard_config.yml"
+data_structure_path = "sample_resources/data_structure.xlsx"
+sample_transactions_path = "sample_resources/transactions_in_categories_example.xlsx"

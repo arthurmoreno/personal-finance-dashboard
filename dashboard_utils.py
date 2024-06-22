@@ -3,6 +3,7 @@ import pandas as pd
 from io import BytesIO
 import pandas as pd
 import polars as pl
+from constants import sample_transactions_path, data_structure_path, sample_config_path
 
 
 def display_get_transactions_file():
@@ -47,9 +48,7 @@ def display_home():
     st.markdown("#### Requirements")
     st.markdown("###### Transactions data")
     st.info(home_info, icon="ℹ️")
-    example_transactions_data = pl.read_excel(
-        "sample_resources/transactions_in_categories_example.xlsx"
-    ).to_pandas()
+    example_transactions_data = pl.read_excel(sample_transactions_path).to_pandas()
 
     # Function to convert DataFrame to Excel
     def to_excel(df):
@@ -70,8 +69,7 @@ def display_home():
         file_name="sample_transactions_file.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     )
-
-    df = pd.read_excel("sample_resources/data_structure.xlsx")
+    df = pd.read_excel(data_structure_path)
     st.dataframe(df)
 
     st.markdown("###### Configuration file")
@@ -80,7 +78,7 @@ def display_home():
     # Streamlit app
     # Read the YAML file
     with open(
-        "sample_resources/sample_dashboard_config.yml",
+        sample_config_path,
         "r",
     ) as file:
         yaml_data = file.read()
