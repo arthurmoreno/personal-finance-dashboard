@@ -2,8 +2,16 @@ import streamlit as st
 import pandas as pd
 from io import BytesIO
 import pandas as pd
-import polars as pl
-from constants import sample_transactions_path, data_structure_path, sample_config_path
+from constants import (
+    sample_transactions_path,
+    data_structure_path,
+    sample_config_path,
+    home_title,
+    home_introduction,
+    home_privacy,
+    home_transactions_info,
+    home_config_info,
+)
 
 
 def display_get_transactions_file():
@@ -22,24 +30,21 @@ def display_get_configuration_file():
     return uploaded_file
 
 
+# Function to convert DataFrame to Excel
+def df_to_excel(df):
+    output = BytesIO()
+    writer = pd.ExcelWriter(output, engine="xlsxwriter")
+    df.to_excel(writer, index=False, sheet_name="Sheet1")
+    writer.close()
+    processed_data = output.getvalue()
+    return processed_data
+
+
 def display_home():
-    home_title = "Personal Finance Dashboard"
-    home_introduction = "Welcome to a streamlit based personal finance dashboard. Here,\
-        you can get a visual representation of your finances over time by providing your\
-        transaction history."
-    home_privacy = "This application is hosted on Streamlit Cloud. Terms and services of\
-        Streamlit Cloud therefore apply."
-    home_info = "You will need to provide an excel file (.xlsx) in the sidebar structured like this:"
-    home_config_info = "You will need to provide a configuration file (.yml) in the sidebar structured like this:"
-
-    st.markdown("<style>#MainMenu{visibility:hidden;}</style>", unsafe_allow_html=True)
-
-    # st.title(home_title)
     st.markdown(
         f"""# {home_title} <span style=color:#2E9BF5><font size=5>Beta</font></span>""",
         unsafe_allow_html=True,
     )
-
     st.markdown("""\n""")
     st.markdown("#### Greetings")
     st.write(home_introduction)
@@ -47,20 +52,11 @@ def display_home():
     st.write(home_privacy)
     st.markdown("#### Requirements")
     st.markdown("###### Transactions data")
-    st.info(home_info, icon="ℹ️")
-    example_transactions_data = pl.read_excel(sample_transactions_path).to_pandas()
-
-    # Function to convert DataFrame to Excel
-    def to_excel(df):
-        output = BytesIO()
-        writer = pd.ExcelWriter(output, engine="xlsxwriter")
-        df.to_excel(writer, index=False, sheet_name="Sheet1")
-        writer.close()
-        processed_data = output.getvalue()
-        return processed_data
+    st.info(home_transactions_info, icon="ℹ️")
+    example_transactions_data = pd.read_excel(sample_transactions_path)
 
     # Convert DataFrame to Excel
-    example_transactions_data = to_excel(example_transactions_data)
+    example_transactions_data = df_to_excel(example_transactions_data)
 
     # Create a download button
     st.download_button(
@@ -71,7 +67,6 @@ def display_home():
     )
     df = pd.read_excel(data_structure_path)
     st.dataframe(df)
-
     st.markdown("###### Configuration file")
     st.info(home_config_info, icon="ℹ️")
 
@@ -92,3 +87,63 @@ def display_home():
     )
 
     st.code(yaml_data, language="yml")
+
+    st.markdown(
+        f"""
+        ## Frequently Asked Questions
+        """,
+        unsafe_allow_html=True,
+    )
+
+    with st.expander("**How do I get my transactions?**"):
+        st.markdown(
+            """
+        Some bank offer a download of your transactions in a `CSV` or `Excel` format. For other types of transaction,
+        you can manually add them to the file (e.g. cash transactions).
+        """
+        )
+
+    with st.expander(
+        "**What is the description column in the sample transaction file?**"
+    ):
+        st.markdown(
+            """
+        This column is not required for the dashboard, however, it is recommend to use this column
+        to add all the information about the transaction provided by the bank
+        (e.g. description, counterparty account number, name, location etc.).
+
+        It can be used to classify the transactions in categories before providing them to the dashboard.
+        """
+        )
+
+    with st.expander("**How do I assign categories to transactions?**"):
+        st.markdown(
+            """
+        This is a difficult task. I suggest using excel or python to automatically classify
+        the transactions based on the value in the description column.
+
+        E.g. All transactions with the word "McDonalds" in the description can be in the "Food" category and "Fast-food" subcategory.
+
+        After that, you can manually go through the transactions, correct any mistakes and fill in unclassified transactions.
+        """
+        )
+
+    with st.expander("**What categories should I have?**"):
+        st.markdown(
+            """
+        It is up to you to decide what categories you want to have. I suggest having a few special categories:
+        -- TRANSFERS: This is used to cancel out transfers between your accounts.
+        -- UNKNOWN: This is used for transactions that you cannot classify.
+        -- STARTING_BALANCE: This is used to set the starting balance of your accounts if you want to start tracking from a certain date.
+        """
+        )
+
+    with st.expander("**Can **"):
+        st.markdown(
+            """
+        It is up to you to decide what categories you want to have. I suggest having a few special categories:
+        -- TRANSFERS: This is used to cancel out transfers between your accounts.
+        -- UNKNOWN: This is used for transactions that you cannot classify.
+        -- STARTING_BALANCE: This is used to set the starting balance of your accounts if you want to start tracking from a certain date.
+        """
+        )

@@ -16,12 +16,20 @@ if "page_setup" not in st.session_state:
 
 # Let user upload transactions data
 file_path = display_get_transactions_file()
-config = display_get_configuration_file()
+_config = display_get_configuration_file()
 
-if config is not None:
-    config = yaml.safe_load(config)
-    finance_dashboard = FinanceDashboard(config)
-if (file_path is not None) & (config is not None):
+if _config is not None:
+    config = yaml.safe_load(_config)
+else:
+    with open("sample_resources/default_dashboard_config.yml") as stream:
+        try:
+            config = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+finance_dashboard = FinanceDashboard(config)
+
+if file_path is not None:
     data = pl.read_excel(file_path)
     # Get first and last date mentioned in the data
     first_and_last_date = finance_dashboard.get_first_last_date(data)
