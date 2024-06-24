@@ -36,3 +36,7 @@ lineplot_width:
   Checkings: 3
   Savings: 3
   Total: 5
+
+# This category is used to generate the pieplot
+# to respresent your income.
+income_category: INCOME

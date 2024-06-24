@@ -23,3 +23,7 @@ lineplot_colors: {}
 # for random width allocation use
 # lineplot_width: {}
 lineplot_width: {}
+
+# This category is used to generate the pieplot
+# to respresent your income.
+income_category: INCOME

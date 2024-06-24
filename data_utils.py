@@ -20,6 +20,7 @@ class FinanceDashboard:
         self.all_sources = None
         self.first_and_last_date = None
         self.PlotUtils = PlotUtils(config_file=config_file)
+        self.income_category = config_file["income_category"]
 
     def calculate_transactions_per_category(
         self, df: DataFrame, category_col: str, time_frame_col: str
@@ -197,7 +198,7 @@ class FinanceDashboard:
 
     def display_pieplot(self, df):
         data = (
-            df.filter(pl.col("CATEGORY") == "INCOME")
+            df.filter(pl.col("CATEGORY") == self.income_category)
             .group_by("SUBCATEGORY")
             .agg(pl.sum("AMOUNT").alias("AMOUNT"))
             .sort("SUBCATEGORY")
