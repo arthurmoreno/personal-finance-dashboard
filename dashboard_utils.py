@@ -131,19 +131,14 @@ def display_home():
     with st.expander("**What categories should I have?**"):
         st.markdown(
             """
-        It is up to you to decide what categories you want to have. I suggest having a few special categories:
+        I suggest having a few special categories:
         -- TRANSFERS: This is used to cancel out transfers between your accounts.
         -- UNKNOWN: This is used for transactions that you cannot classify.
         -- STARTING_BALANCE: This is used to set the starting balance of your accounts if you want to start tracking from a certain date.
-        """
-        )
 
-    with st.expander("**Can **"):
-        st.markdown(
-            """
-        It is up to you to decide what categories you want to have. I suggest having a few special categories:
-        -- TRANSFERS: This is used to cancel out transfers between your accounts.
-        -- UNKNOWN: This is used for transactions that you cannot classify.
-        -- STARTING_BALANCE: This is used to set the starting balance of your accounts if you want to start tracking from a certain date.
+        Additionaly, you should specify a category named INCOME for your income, this is required to generate the pipelot.
+        You can change the category name in the configuration file.
+
+        Aside from these categories, you can add as many categories or subcategories as you want.
         """
         )
