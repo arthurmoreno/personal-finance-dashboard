@@ -7,7 +7,7 @@ display_data: True
 currency: €
 
 # Optional if certain categories should not be visualised
-# in the barplot.
+# in the barplot. Otherwise use
 # Default value: hidden_categories_from_barplot: []
 hidden_categories_from_barplot: []
 
