@@ -6,3 +6,4 @@ xlsx2csv
 xlsxwriter
 pydantic
 pandera
+openpyxl
