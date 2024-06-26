@@ -1,3 +1,4 @@
+pandera
 pyyaml
 polars
 streamlit-shadcn-ui
@@ -5,4 +6,3 @@ plotly
 xlsx2csv
 xlsxwriter
 pydantic
-pandera
