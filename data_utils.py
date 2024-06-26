@@ -12,6 +12,8 @@ from constants import (
     category_col_mapping,
 )
 import streamlit_shadcn_ui as ui
+import pandas as pd
+import pandera as pa
 
 
 class FinanceDashboard:
@@ -222,3 +224,35 @@ class FinanceDashboard:
             pl.col("DATE").cast(pl.String),
         )
         return data
+
+    def validate_data(self, df):
+        df = df.to_pandas()
+
+        if "DATE" not in df.columns:
+            st.error(
+                f"Column 'DATE' not in dataframe. Columns in dataframe: {list(df.columns)}"
+            )
+            st.stop()
+
+        df["DATE"] = pd.to_datetime(df["DATE"], errors="coerce")
+
+        if df["DATE"].isna().sum() > 0:
+            st.error("Please check the DATE column. It contains invalid values.")
+            st.stop()
+
+        # Define the schema
+        schema = pa.DataFrameSchema(
+            {
+                "AMOUNT": pa.Column(float, nullable=False),
+                "SUBCATEGORY": pa.Column(str, nullable=False),
+                "CATEGORY": pa.Column(str, nullable=False),
+                "SOURCE": pa.Column(str, nullable=False),
+            }
+        )
+
+        # Validate the DataFrame
+        try:
+            schema.validate(df)
+        except pa.errors.SchemaError as e:
+            st.error(e)
+            st.stop()
