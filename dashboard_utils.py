@@ -3,6 +3,8 @@ import pandas as pd
 from io import BytesIO
 import pandas as pd
 from constants import (
+    time_frame_mapping,
+    category_col_mapping,
     sample_transactions_path,
     data_structure_path,
     sample_config_path,
@@ -12,6 +14,18 @@ from constants import (
     home_transactions_info,
     home_config_info,
 )
+import streamlit_shadcn_ui as ui
+
+
+def display_date_picker(first_and_last_date):
+    """Displays the date picker and returns the selected dates."""
+    day_start, day_end = ui.date_picker(
+        key="date_picker",
+        mode="range",
+        label="Selected Range",
+        default_value=first_and_last_date,
+    )
+    return day_start, day_end
 
 
 def display_get_transactions_file():
@@ -21,6 +35,43 @@ def display_get_transactions_file():
             "Upload the transactions.", key="transactions_file"
         )
     return uploaded_file
+
+
+def display_tabs():
+    """Displays the tabs for the time frame, source and category and return their value."""
+
+    def create_tabs(mapping):
+        # Key is arbitrary here.
+        selected = ui.tabs(
+            options=mapping.keys(),
+            default_value=list(mapping.keys())[0],
+            key=list(mapping.keys())[0],
+        )
+        selected_col = mapping.get(selected)
+
+        return selected_col
+
+    tabs = st.columns([3, 3, 6])
+    with tabs[0]:
+        time_frame_col = create_tabs(time_frame_mapping)
+    with tabs[1]:
+        category_col = create_tabs(category_col_mapping)
+    return time_frame_col, category_col
+
+
+def display_sources(all_sources):
+    sources = st.multiselect(
+        label="",
+        options=all_sources,
+        default=all_sources,
+    )
+    return sources
+
+
+def display_data(df):
+    """Displays the transaction data."""
+    with st.expander("Data Preview"):
+        st.dataframe(df)
 
 
 def display_get_configuration_file():
