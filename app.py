@@ -7,9 +7,6 @@ from dashboard_utils import (
 )
 import polars as pl
 import yaml
-import datetime as dt
-import pandera as pa
-import pandas as pd
 
 if "page_setup" not in st.session_state:
     st.session_state.page_setup = True
