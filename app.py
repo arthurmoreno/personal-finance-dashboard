@@ -16,10 +16,10 @@ if "page_setup" not in st.session_state:
 
 # Let user upload transactions data
 file_path = display_get_transactions_file()
-_config = display_get_configuration_file()
+uploaded_config = display_get_configuration_file()
 
-if _config is not None:
-    config = yaml.safe_load(_config)
+if uploaded_config is not None:
+    config = yaml.safe_load(uploaded_config)
 else:
     with open("sample_resources/default_dashboard_config.yml") as stream:
         try:
@@ -30,8 +30,9 @@ else:
 finance_dashboard = FinanceDashboard(config)
 
 if file_path is not None:
-    data = pl.read_excel(file_path)
-    # Get first and last date mentioned in the data
+    org_data = pl.read_excel(file_path)
+    data = finance_dashboard.add_columns(org_data)
+
     first_and_last_date = finance_dashboard.get_first_last_date(data)
 
     # Give user option to change date range
@@ -42,7 +43,7 @@ if file_path is not None:
 
     # Display the data in tabular form
     if config["display_data"]:
-        finance_dashboard.display_data(data)
+        finance_dashboard.display_data(org_data)
 
     # Get all possible sources within the tiemfeame
     all_sources = finance_dashboard.get_all_sources(data)

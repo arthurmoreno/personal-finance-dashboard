@@ -205,3 +205,20 @@ class FinanceDashboard:
         )
         a = self.PlotUtils.plot_pieplot(data)
         return a
+
+    def add_columns(self, df):
+        data = df.with_columns(
+            [
+                pl.col("DATE").str.strptime(pl.Date, "%Y-%m-%d").alias("DATE"),
+            ]
+        )
+        data = data.with_columns(
+            pl.col("DATE").dt.strftime("%Y-%m").alias("YEAR_MONTH"),
+            pl.col("DATE").dt.strftime("%YW%V").alias("YEAR_WEEK"),
+            pl.when(pl.col("AMOUNT") > 0)
+            .then(pl.lit("INCOMING"))
+            .otherwise(pl.lit("OUTGOING"))
+            .alias("TYPE"),
+            pl.col("DATE").cast(pl.String),
+        )
+        return data
