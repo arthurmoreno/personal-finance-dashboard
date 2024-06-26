@@ -7,6 +7,9 @@ from dashboard_utils import (
 )
 import polars as pl
 import yaml
+import datetime as dt
+import pandera as pa
+import pandas as pd
 
 if "page_setup" not in st.session_state:
     st.session_state.page_setup = True
@@ -29,8 +32,50 @@ else:
 
 finance_dashboard = FinanceDashboard(config)
 
+
+def validate_data(df):
+    df = df.to_pandas()
+
+    def is_valid_date(date_str):
+        try:
+            if pd.api.types.is_datetime64_any_dtype(["DATE"]):
+                return True
+            else:
+                dt.strptime(date_str, "%Y-%m-%d")
+                return True
+        except ValueError:
+            return False
+
+    # Define the schema
+    schema = pa.DataFrameSchema(
+        {
+            "TRANSACTION_ID": pa.Column(pa.String, nullable=True),
+            "AMOUNT": pa.Column(pa.Float, nullable=False),
+            "DATE": pa.Column(
+                pa.String,
+                checks=pa.Check(
+                    lambda x: is_valid_date(x),
+                    element_wise=True,
+                    error="Invalid date format. Must be in the format YYYY-MM-DD",
+                ),
+            ),
+            "SUBCATEGORY": pa.Column(pa.String, nullable=False),
+            "CATEGORY": pa.Column(pa.String, nullable=False),
+            "SOURCE": pa.Column(pa.String, nullable=False),
+        }
+    )
+
+    # Validate the DataFrame
+    try:
+        schema.validate(df)
+        st.write("Perfect! The data is valid.")
+    except pa.errors.SchemaError as e:
+        st.error(e)
+
+
 if file_path is not None:
     org_data = pl.read_excel(file_path)
+    validate_data(org_data)
     data = finance_dashboard.add_columns(org_data)
 
     first_and_last_date = finance_dashboard.get_first_last_date(data)
