@@ -102,6 +102,7 @@ def display_home():
                 padding-right: 10%;
             }
         </style>
+
     """
 
     st.markdown(margins_css, unsafe_allow_html=True)
@@ -153,6 +154,7 @@ def display_home():
         <div class="main-header">Personal Finance Dashboard:</div>
         <div class="sub-header">Take Control of Your Finances</div>
         <div class="intro-text">Welcome to a Streamlit-based personal finance dashboard. This intuitive dashboard is designed to give you a visual representation of your finances over time, empowering you to make informed decisions and achieve your financial goals.</div>
+        <div style="position: relative; padding-bottom: calc(55% + 28px); height: 0;"><iframe src="https://app.supademo.com/embed/clxxtfmbf02qq149zef5q5v4y" title="Dashboard Demo" allow="clipboard-write" frameborder="0" webkitallowfullscreen="true" mozallowfullscreen="true" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
         <div class="section-header">What can you see here?</div>
         <ul class="feature-list">
             <li><strong>Track your income and expenses</strong> 📊: See exactly where your money comes from and goes. Easy-to-read visualizations break down your income streams and spending habits, helping you identify areas for potential savings or growth. Gain a comprehensive understanding of your financial patterns to make informed decisions about budgeting and resource allocation.</li>

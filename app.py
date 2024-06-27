@@ -42,6 +42,18 @@ else:
 plot_dashboard_utils = PlotDashboardUtils(config)
 
 if file_path is not None:
+    margins_css = """
+    <style>
+    @media only screen and (min-width: 768px) {
+        .main > div {
+            padding-left: 10%;
+            padding-right: 10%;
+        }
+    }
+    </style>
+    """
+    st.markdown(margins_css, unsafe_allow_html=True)
+
     org_data = pl.read_excel(file_path)
     validate_data(org_data)
     data = add_columns(org_data)
