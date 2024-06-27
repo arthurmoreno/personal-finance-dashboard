@@ -21,6 +21,7 @@ hidden_categories_from_barplot:
 pieplot_colors:
   - "#16A085"
   - "#34495E"
+  - "#808836"
 
 # Optional if specific colours are desired.
 # for random color allocation use
