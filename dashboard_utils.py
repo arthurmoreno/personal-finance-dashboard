@@ -109,10 +109,6 @@ def display_home():
     st.markdown(
         """
         <style>
-        .custom-container {
-            margin-left: 0%; /* Adjust margin as needed */
-            margin-right: 0%; /* Adjust margin as needed */
-        }
         .main-header {
             font-size: 42px;
             font-weight: bold;
