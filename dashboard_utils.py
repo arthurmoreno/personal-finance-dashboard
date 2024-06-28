@@ -12,6 +12,20 @@ from constants import (
 import streamlit_shadcn_ui as ui
 
 
+def display_contact_info():
+    with st.sidebar:
+        st.markdown(
+            """
+        ---
+        Get in touch:
+        
+        LinkedIn → [Narek Arakelyan](https://www.linkedin.com/in/n-arakelyan/)
+
+        GitHub → [Narek Arakelyan](https://github.com/NarekAra)
+        """
+        )
+
+
 def display_date_picker(first_and_last_date):
     """Displays the date picker and returns the selected dates."""
     day_start, day_end = ui.date_picker(

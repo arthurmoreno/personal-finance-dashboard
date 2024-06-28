@@ -8,6 +8,7 @@ from dashboard_utils import (
     display_sources,
     display_tabs,
     display_date_picker,
+    display_contact_info,
 )
 from data_utils import (
     validate_data,
@@ -29,6 +30,7 @@ if "page_setup" not in st.session_state:
 # Let user upload transactions data
 file_path = display_get_transactions_file()
 uploaded_config = display_get_configuration_file()
+display_contact_info()
 
 if uploaded_config is not None:
     config = yaml.safe_load(uploaded_config)
