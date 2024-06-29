@@ -18,7 +18,7 @@ def display_contact_info():
             """
         ---
         Get in touch:
-        
+
         LinkedIn → [Narek Arakelyan](https://www.linkedin.com/in/n-arakelyan/)
 
         GitHub → [Narek Arakelyan](https://github.com/NarekAra)
@@ -273,7 +273,7 @@ def display_home():
         * __UNKNOWN__: This is used for transactions that you cannot classify.
         * __STARTING_BALANCE__: This is used to set the starting balance of your accounts if you want to start tracking from a certain date.
 
-        Additionaly, you should specify a category named __INCOME__ for your income, this is required to generate the pipelot.
+        Additionaly, you should specify a category named __INCOME__ for your income, this is required to generate the piepelot.
         You can change the category name in the configuration file.
 
         Aside from these categories, you can add as many categories or subcategories as you want.
