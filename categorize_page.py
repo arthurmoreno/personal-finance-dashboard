@@ -15,22 +15,25 @@ from utils.constants import (
     data_structure_path,
 )
 
+# Needed to reload the AgGrid
 if "i" not in st.session_state:
     st.session_state.i = 0
 
+
+# Let user upload transactions data
 example_transactions_data = df_to_excel(pd.read_excel(example_transactions_path))
+file_path = display_get_transactions_file(example_file=example_transactions_data)
+
+# Let user upload their configuration file
 with open(
     example_config_path,
     "r",
 ) as file:
-    yaml_data = file.read()
-
-# Let user upload transactions data
-file_path = display_get_transactions_file(example_file=example_transactions_data)
-uploaded_config = display_get_configuration_file(example_file=yaml_data)
+    example_config_data = file.read()
+config_path = display_get_configuration_file(example_file=example_config_data)
 display_contact_info()
 
-if (uploaded_config is not None) & (file_path is not None):
+if (config_path is not None) & (file_path is not None):
     st.markdown(
         """
         <ul class="feature-list">
@@ -42,7 +45,7 @@ if (uploaded_config is not None) & (file_path is not None):
         </ul>""",
         unsafe_allow_html=True,
     )
-    config = yaml.safe_load(uploaded_config)
+    config = yaml.safe_load(config_path)
     org_data = pd.read_excel(file_path)
     processor = TransactionProcessor(config)
 
@@ -130,4 +133,4 @@ else:
         icon="ℹ️",
     )
 
-    st.code(yaml_data, language="yml")
+    st.code(example_config_data, language="yml")
