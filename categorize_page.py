@@ -18,9 +18,16 @@ from utils.constants import (
 if "i" not in st.session_state:
     st.session_state.i = 0
 
+example_transactions_data = df_to_excel(pd.read_excel(example_transactions_path))
+with open(
+    example_config_path,
+    "r",
+) as file:
+    yaml_data = file.read()
+
 # Let user upload transactions data
-file_path = display_get_transactions_file()
-uploaded_config = display_get_configuration_file()
+file_path = display_get_transactions_file(example_file=example_transactions_data)
+uploaded_config = display_get_configuration_file(example_file=yaml_data)
 display_contact_info()
 
 if (uploaded_config is not None) & (file_path is not None):
@@ -158,16 +165,6 @@ else:
         icon="ℹ️",
     )
 
-    example_transactions_data = df_to_excel(pd.read_excel(example_transactions_path))
-
-    # Create a download button
-    st.download_button(
-        label="Download example transactions file",
-        data=example_transactions_data,
-        file_name="example_transactions_file.xlsx",
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    )
-
     data_structure = pd.read_excel(data_structure_path)
     st.dataframe(data_structure)
 
@@ -181,19 +178,6 @@ else:
     st.info(
         "This file will contain the rules for categorizing your transactions. Every transaction should only have 1 subcategory. Every subcategory should have exactly 1 category.",
         icon="ℹ️",
-    )
-
-    with open(
-        example_config_path,
-        "r",
-    ) as file:
-        yaml_data = file.read()
-    # Create a download button
-    st.download_button(
-        label="Download example configuration file",
-        data=yaml_data,
-        file_name="test.yml",
-        mime="application/x-yaml",
     )
 
     st.code(yaml_data, language="yml")

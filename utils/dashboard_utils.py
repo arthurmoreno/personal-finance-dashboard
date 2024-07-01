@@ -48,12 +48,19 @@ def display_date_picker(first_and_last_date):
     return day_start, day_end
 
 
-def display_get_transactions_file():
+def display_get_transactions_file(example_file=None):
     """Displays the file uploader and returns the uploaded file."""
     with st.sidebar:
         uploaded_file = st.file_uploader(
             "Upload the transactions.", key="transactions_file"
         )
+        if example_file:
+            st.download_button(
+                label="Download sample transactions file",
+                data=example_file,
+                file_name="sample_transactions_file.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            )
     return uploaded_file
 
 
@@ -94,10 +101,18 @@ def display_data(df):
         st.dataframe(df)
 
 
-def display_get_configuration_file(key="config"):
+def display_get_configuration_file(example_file=None):
     """Displays the file uploader and returns the uploaded file."""
     with st.sidebar:
-        uploaded_file = st.file_uploader("Upload the configuration file.", key=key)
+        uploaded_file = st.file_uploader("Upload the configuration file.", key="config")
+        if example_file:
+            # Create a download button
+            st.download_button(
+                label="Download sample configuration file",
+                data=example_file,
+                file_name="sample_dashboard_config.yaml",
+                mime="application/x-yaml",
+            )
     return uploaded_file
 
 
@@ -111,16 +126,8 @@ def df_to_excel(df):
     return processed_data
 
 
-def display_home():
-    example_transactions_data = df_to_excel(
-        pd.read_excel(example_categorized_transactions_path)
-    )
+def display_home(yaml_data):
     data_structure = pd.read_excel(categorized_data_structure_path)
-    with open(
-        exaple_dashboard_config_path,
-        "r",
-    ) as file:
-        yaml_data = file.read()
 
     st.markdown(
         """
@@ -201,13 +208,6 @@ def display_home():
         icon="ℹ️",
     )
 
-    # Create a download button
-    st.download_button(
-        label="Download sample transactions file",
-        data=example_transactions_data,
-        file_name="sample_transactions_file.xlsx",
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    )
     st.dataframe(data_structure)
     st.markdown(
         '<div class="subsection-header">Configuration file</div>',
@@ -216,14 +216,6 @@ def display_home():
     st.info(
         "You can optionally provide a configuration file (.yml) in the sidebar structured like this:",
         icon="ℹ️",
-    )
-
-    # Create a download button
-    st.download_button(
-        label="Download sample configuration file",
-        data=yaml_data,
-        file_name="sample_dashboard_config.yaml",
-        mime="application/x-yaml",
     )
 
     st.code(yaml_data, language="yml")

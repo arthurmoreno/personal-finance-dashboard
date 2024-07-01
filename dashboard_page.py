@@ -9,6 +9,7 @@ from utils.dashboard_utils import (
     display_tabs,
     display_date_picker,
     display_contact_info,
+    df_to_excel,
 )
 from utils.data_utils import (
     validate_data,
@@ -17,10 +18,14 @@ from utils.data_utils import (
     get_first_last_date,
     get_all_sources,
 )
-from utils.constants import default_dashboard_config_path
-
+from utils.constants import (
+    default_dashboard_config_path,
+    example_categorized_transactions_path,
+    exaple_dashboard_config_path,
+)
 import polars as pl
 import yaml
+import pandas as pd
 
 if "page_setup" not in st.session_state:
     st.session_state.page_setup = True
@@ -28,9 +33,20 @@ if "page_setup" not in st.session_state:
         page_title="Finance Dashboard", page_icon=":bar_chart:", layout="wide"
     )
 
+
+example_transactions_data = df_to_excel(
+    pd.read_excel(example_categorized_transactions_path)
+)
+with open(
+    exaple_dashboard_config_path,
+    "r",
+) as file:
+    yaml_data = file.read()
+
 # Let user upload transactions data
-file_path = display_get_transactions_file()
-uploaded_config = display_get_configuration_file()
+file_path = display_get_transactions_file(example_file=example_transactions_data)
+uploaded_config = display_get_configuration_file(example_file=yaml_data)
+
 display_contact_info()
 
 if uploaded_config is not None:
@@ -95,5 +111,5 @@ if file_path is not None:
     pieplot = plot_dashboard_utils.display_pieplot(data)
     pieplot
 else:
-    display_home()
+    display_home(yaml_data)
     st.stop()
