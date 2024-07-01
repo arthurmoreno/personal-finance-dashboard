@@ -1,8 +1,7 @@
-from polars.dataframe import DataFrame
 import polars as pl
 import streamlit as st
-from plots import PlotUtils
-from calculate_utils import CalculateUtils
+from utils.plots import PlotUtils
+from utils.calculate_utils import CalculateUtils
 
 
 class PlotDashboardUtils:

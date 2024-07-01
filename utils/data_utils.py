@@ -1,6 +1,6 @@
 import streamlit as st
 import polars as pl
-from constants import source_col, date_col
+from utils.constants import source_col, date_col
 import pandera as pa
 import pandas as pd
 

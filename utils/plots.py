@@ -6,7 +6,7 @@ from typing import List
 import streamlit_shadcn_ui as ui
 import polars as pl
 import altair as alt
-from constants import (
+from utils.constants import (
     amount_col,
     source_col,
     type_col,
@@ -102,8 +102,8 @@ class PlotUtils:
                 create_metric_card(source, net_value_source, ToT_net_value_source)
 
     def plot_pieplot(self, df: DataFrame):
+        df = df.to_pandas()
         operation_select = alt.selection_single(fields=["SUBCATEGORY"], empty="all")
-
         if self.pieplot_colors:
             scale = alt.Scale(
                 domain=df["SUBCATEGORY"].to_list(),
@@ -111,16 +111,12 @@ class PlotUtils:
             )
         else:
             scale = alt.Scale(domain=df["SUBCATEGORY"].to_list())
-
+        # Create the pie chart
         pie_plot = (
             alt.Chart(df)
             .mark_arc(innerRadius=50)
             .encode(
-                theta=alt.Theta(
-                    "AMOUNT",
-                    type="quantitative",
-                    aggregate="sum",
-                ),
+                theta=alt.Theta(field="AMOUNT", type="quantitative", aggregate="sum"),
                 color=alt.Color(
                     field="SUBCATEGORY",
                     type="nominal",
@@ -129,5 +125,6 @@ class PlotUtils:
                 ),
                 opacity=alt.condition(operation_select, alt.value(1), alt.value(0.50)),
             )
-        ).add_selection(operation_select)
+            .add_selection(operation_select)
+        )
         return pie_plot

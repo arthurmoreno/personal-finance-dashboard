@@ -2,14 +2,15 @@ import streamlit as st
 import pandas as pd
 from io import BytesIO
 import pandas as pd
-from constants import (
+from utils.constants import (
     time_frame_mapping,
     category_col_mapping,
-    sample_transactions_path,
-    data_structure_path,
-    sample_config_path,
+    example_categorized_transactions_path,
+    categorized_data_structure_path,
+    exaple_dashboard_config_path,
 )
 import streamlit_shadcn_ui as ui
+from streamlit_extras.mention import mention
 
 
 def display_contact_info():
@@ -17,12 +18,22 @@ def display_contact_info():
         st.markdown(
             """
         ---
-        Get in touch:
-
-        LinkedIn → [Narek Arakelyan](https://www.linkedin.com/in/n-arakelyan/)
-
-        GitHub → [Narek Arakelyan](https://github.com/NarekAra)
         """
+        )
+        st.markdown(
+            """
+        Get in touch:
+        """
+        )
+        mention(
+            label="Narek Arakelyan",
+            icon="https://cdn1.iconfinder.com/data/icons/logotypes/32/circle-linkedin-1024.png",
+            url="https://www.linkedin.com/in/n-arakelyan/",
+        )
+        mention(
+            label="Narek Arakelyan",
+            icon="github",
+            url="https://github.com/NarekAra",
         )
 
 
@@ -83,10 +94,10 @@ def display_data(df):
         st.dataframe(df)
 
 
-def display_get_configuration_file():
+def display_get_configuration_file(key="config"):
     """Displays the file uploader and returns the uploaded file."""
     with st.sidebar:
-        uploaded_file = st.file_uploader("Upload the configuration file.", key="config")
+        uploaded_file = st.file_uploader("Upload the configuration file.", key=key)
     return uploaded_file
 
 
@@ -101,29 +112,23 @@ def df_to_excel(df):
 
 
 def display_home():
-    example_transactions_data = df_to_excel(pd.read_excel(sample_transactions_path))
-    data_structure = pd.read_excel(data_structure_path)
+    example_transactions_data = df_to_excel(
+        pd.read_excel(example_categorized_transactions_path)
+    )
+    data_structure = pd.read_excel(categorized_data_structure_path)
     with open(
-        sample_config_path,
+        exaple_dashboard_config_path,
         "r",
     ) as file:
         yaml_data = file.read()
 
-    margins_css = """
-        <style>
-            .main > div {
-                padding-left: 10%;
-                padding-right: 10%;
-            }
-        </style>
-
-    """
-
-    st.markdown(margins_css, unsafe_allow_html=True)
-
     st.markdown(
         """
         <style>
+        .main > div {
+                padding-left: 10%;
+                padding-right: 10%;
+        }
         .main-header {
             font-size: 42px;
             font-weight: bold;
@@ -159,12 +164,7 @@ def display_home():
             margin-bottom: 15px;
         }
         </style>
-        """,
-        unsafe_allow_html=True,
-    )
 
-    st.markdown(
-        """
         <div class="main-header">Personal Finance Dashboard:</div>
         <div class="sub-header">Take Control of Your Finances</div>
         <div class="intro-text">Welcome to a Streamlit-based personal finance dashboard. This intuitive dashboard is designed to give you a visual representation of your finances over time, empowering you to make informed decisions and achieve your financial goals.</div>
@@ -190,7 +190,7 @@ def display_home():
             <li><strong>Account Selection:</strong> Use colored toggles to show/hide specific accounts in the visualizations.</li>
         </ul>
         <div class="section-header">Privacy</div>
-        <div class="intro-text">This application is hosted on Streamlit Cloud. Terms and services of Streamlit Cloud therefore apply.</div>
+        <div class="intro-text">This application is hosted on Streamlit Cloud. Terms of service of Streamlit Cloud therefore apply.</div>
         <div class="section-header">Requirements</div>
         <div class="subsection-header">Transactions data</div>
         """,

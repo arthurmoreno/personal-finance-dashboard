@@ -1,7 +1,7 @@
 from polars.dataframe import DataFrame
 import polars as pl
 from typing import List
-from constants import (
+from utils.constants import (
     amount_col,
     source_col,
     type_col,
