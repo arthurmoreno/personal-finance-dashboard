@@ -103,7 +103,7 @@ class TransactionProcessor:
         data = data.select(self.select_columns)
         data.to_excel(filename, index=False)
 
-    def map_and_validate_data(self, org_data):
+    def map_and_validate_categories(self, org_data):
         categorized_data = self.map_and_validate_categories(org_data)
         self.validate_data(categorized_data)
         categorized_data = self.remove_columns(categorized_data)
