@@ -27,9 +27,6 @@ import polars as pl
 import yaml
 import pandas as pd
 
-if "page_setup" not in st.session_state:
-    st.session_state.page_setup = True
-
 data_structure = pd.read_excel(categorized_data_structure_path)
 example_transactions_data = df_to_excel(
     pd.read_excel(example_categorized_transactions_path)
