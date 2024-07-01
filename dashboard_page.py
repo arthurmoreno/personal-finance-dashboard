@@ -30,51 +30,6 @@ import pandas as pd
 if "page_setup" not in st.session_state:
     st.session_state.page_setup = True
 
-# st.markdown(
-#     """
-#         <style>
-#         .main > div {
-#                 padding-left: 10%;
-#                 padding-right: 10%;
-#         }
-#         .main-header {
-#             font-size: 42px;
-#             font-weight: bold;
-#             text-align: center;
-#             margin-bottom: 0px;
-#         }
-#         .sub-header {
-#             font-size: 24px;
-#             text-align: center;
-#             color: #2E9BF5;
-#         }
-#         .intro-text {
-#             font-size: 18px;
-#             margin-bottom: 5px;
-#             margin-top: 20px;
-#         }
-#         .section-header {
-#             font-size: 28px;
-#             font-weight: bold;
-#             margin-top: 30px;
-#             margin-bottom: 10px;
-#         }
-#         .feature-list, .custom-list {
-#             font-size: 18px;
-#         }
-#         .feature-list li, .custom-list li {
-#             margin-bottom: 5px;
-#         }
-#         .subsection-header {
-#             font-size: 22px;
-#             font-weight: bold;
-#             margin-top: 15px;
-#             margin-bottom: 15px;
-#         }
-#         </style>
-#         """,
-#     unsafe_allow_html=True,
-# )
 data_structure = pd.read_excel(categorized_data_structure_path)
 example_transactions_data = df_to_excel(
     pd.read_excel(example_categorized_transactions_path)
@@ -103,18 +58,6 @@ else:
 plot_dashboard_utils = PlotDashboardUtils(config)
 
 if file_path is not None:
-    margins_css = """
-    <style>
-    @media only screen and (min-width: 768px) {
-        .main > div {
-            padding-left: 10%;
-            padding-right: 10%;
-        }
-    }
-    </style>
-    """
-    st.markdown(margins_css, unsafe_allow_html=True)
-
     org_data = pl.read_excel(file_path)
     validate_data(org_data)
     data = add_columns(org_data)
@@ -163,21 +106,6 @@ else:
             <li><strong>Track your income and expenses</strong> 📊: See exactly where your money comes from and goes. Easy-to-read visualizations break down your income streams and spending habits, helping you identify areas for potential savings or growth. Gain a comprehensive understanding of your financial patterns to make informed decisions about budgeting and resource allocation.</li>
             <li><strong>Monitor your cash flow</strong> 💸: Stay on top of your incoming and outgoing funds. This dashboard provides clear insight into your current financial liquidity, allowing you to plan for upcoming expenses and avoid potential shortfalls. Anticipate cash crunches and optimize your spending timing to maintain a healthy financial balance.</li>
             <li><strong>View your financial progress</strong> 📈: Charts and graphs track your progress towards your financial goals over time. Whether you're saving for a dream vacation or planning for retirement, this dashboard keeps you motivated and on track. Visualize your long-term financial journey and adjust your strategies based on real-time performance data.</li>
-        </ul>
-        <div class="section-header">Dashboard Features</div>
-        <ul class="feature-list">
-            <li><strong>Account Balance Overview:</strong> Current balances with a total sum for quick reference.</li>
-            <li><strong>Time Series Analysis:</strong> Balance trends over time for each account.</li>
-            <li><strong>Income vs. Expenses:</strong> Weekly, monthly or daily comparison of incoming and outgoing funds, helping you visualize cash flow patterns.</li>
-            <li><strong>Expense Categorization:</strong> Breakdown of expenses by category, enabling detailed spending analysis.</li>
-            <li><strong>Income Sources:</strong> Distribution of income sources, illustrated in a pie chart.</li>
-        </ul>
-        <div class="section-header">Customization Options</div>
-        <ul class="custom-list">
-            <li><strong>Date Range Selection:</strong> Focus on specific time periods using the date picker.</li>
-            <li><strong>Data Granularity:</strong> Toggle between Weekly, Daily, and Monthly views for different perspectives.</li>
-            <li><strong>Category Filtering:</strong> Select 'Category' or 'Subcategory' to adjust the level of expense detail shown.</li>
-            <li><strong>Account Selection:</strong> Use colored toggles to show/hide specific accounts in the visualizations.</li>
         </ul>
         <div class="section-header">Requirements</div>
         <div class="subsection-header">Transactions data</div>

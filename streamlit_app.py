@@ -1,5 +1,8 @@
 import streamlit as st
 
+st.set_page_config(
+    layout="wide",
+)
 categorize_page = st.Page(
     "categorize_page.py",
     title="Categorize Transactions",
