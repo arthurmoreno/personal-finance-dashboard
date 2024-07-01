@@ -100,7 +100,7 @@ if (uploaded_config is not None) & (file_path is not None):
 else:
     st.markdown(
         """
-        <div class="main-header">Categorize Transactions:</div>
+        <div class="main-header">Categorize Transactions</div>
         <div class="sub-header">Take Control of Your Finances</div>
         <div class="section-header">Requirements</div>
         <div class="subsection-header">Transactions data</div>

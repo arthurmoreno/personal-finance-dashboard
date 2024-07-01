@@ -98,7 +98,7 @@ if file_path is not None:
 else:
     st.markdown(
         """
-        <div class="main-header">Personal Finance Dashboard:</div>
+        <div class="main-header">Personal Finance Dashboard</div>
         <div class="sub-header">Take Control of Your Finances</div>
         <div class="intro-text">Welcome to a Streamlit-based personal finance dashboard. This intuitive dashboard is designed to give you a visual representation of your finances over time, empowering you to make informed decisions and achieve your financial goals.</div>
         <div class="section-header">What can you see here?</div>
