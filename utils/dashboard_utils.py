@@ -5,9 +5,7 @@ import pandas as pd
 from utils.constants import (
     time_frame_mapping,
     category_col_mapping,
-    example_categorized_transactions_path,
     categorized_data_structure_path,
-    exaple_dashboard_config_path,
 )
 import streamlit_shadcn_ui as ui
 from streamlit_extras.mention import mention
