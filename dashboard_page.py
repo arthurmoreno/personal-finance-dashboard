@@ -9,6 +9,7 @@ from utils.dashboard_utils import (
     display_date_picker,
     display_contact_info,
     df_to_excel,
+    display_faq,
 )
 from utils.data_utils import (
     validate_data,
@@ -134,51 +135,5 @@ else:
         '<div class="section-header">Frequently Asked Questions</div>',
         unsafe_allow_html=True,
     )
-    with st.expander("**How do I get my transactions?**"):
-        st.markdown(
-            """
-        Some bank offer a download of your transactions in a `CSV` or `Excel` format. For other types of transactions,
-        you can manually add them to the file (e.g. cash transactions).
-        """
-        )
 
-    with st.expander(
-        "**What is the description column in the example transaction file?**"
-    ):
-        st.markdown(
-            """
-        This column is not required for the dashboard, however, it is recommend to use this column
-        to add all the information about the transaction provided by the bank
-        (e.g. description, counterparty account number, name, location etc.).
-
-        It can be used to classify the transactions in categories before providing them to the dashboard.
-        """
-        )
-
-    with st.expander("**How do I assign categories to transactions?**"):
-        st.markdown(
-            """
-        This is a difficult task. I suggest using excel or python to automatically classify
-        the transactions based on the value in the description column.
-
-        E.g. All transactions with the word "McDonalds" in the description can be in the "Food" category and "Fast-food" subcategory.
-
-        After that, you can manually go through the transactions, correct any mistakes and fill in unclassified transactions.
-        """
-        )
-
-    with st.expander("**What categories should I have?**"):
-        st.markdown(
-            """
-        I suggest having a few special categories:
-        * __TRANSFERS__: This is used to cancel out transfers between your accounts.
-        * __UNKNOWN__: This is used for transactions that you cannot classify.
-        * __STARTING_BALANCE__: This is used to set the starting balance of your accounts if you want to start tracking from a certain date.
-
-        Additionaly, you should specify a category named __INCOME__ for your income, this is required to generate the piepelot.
-        You can change the category name in the configuration file.
-
-        Aside from these categories, you can add as many categories or subcategories as you want.
-        """
-        )
-        st.stop()
+    display_faq()
