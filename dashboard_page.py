@@ -1,6 +1,6 @@
 import streamlit as st
-from plot_dashboard_utils import PlotDashboardUtils
-from dashboard_utils import (
+from utils.plot_dashboard_utils import PlotDashboardUtils
+from utils.dashboard_utils import (
     display_get_transactions_file,
     display_get_configuration_file,
     display_home,
@@ -10,13 +10,14 @@ from dashboard_utils import (
     display_date_picker,
     display_contact_info,
 )
-from data_utils import (
+from utils.data_utils import (
     validate_data,
     add_columns,
     filter_data,
     get_first_last_date,
     get_all_sources,
 )
+from utils.constants import default_dashboard_config_path
 
 import polars as pl
 import yaml
@@ -35,7 +36,7 @@ display_contact_info()
 if uploaded_config is not None:
     config = yaml.safe_load(uploaded_config)
 else:
-    with open("sample_resources/default_dashboard_config.yml") as stream:
+    with open(default_dashboard_config_path) as stream:
         try:
             config = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
