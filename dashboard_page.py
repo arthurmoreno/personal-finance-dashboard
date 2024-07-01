@@ -112,21 +112,25 @@ else:
         """,
         unsafe_allow_html=True,
     )
+    st.warning(
+        '👈 Upload an excel (.xlsx) file in the sidebar or click *"Download example transactions"* to get started!'
+    )
     st.info(
-        "You will need to provide an excel file (.xlsx) in the sidebar structured like this:",
+        "The transactions should be structured like this:",
         icon="ℹ️",
     )
-
     st.dataframe(data_structure)
     st.markdown(
         '<div class="subsection-header">Configuration file</div>',
         unsafe_allow_html=True,
     )
+    st.warning(
+        '👈 Optionally upload a configuration file (.yml) in the sidebar or click *"Download example configuration file"* to get started!'
+    )
     st.info(
-        "You can optionally provide a configuration file (.yml) in the sidebar structured like this:",
+        "The configuration file should be structured like this:",
         icon="ℹ️",
     )
-
     st.code(yaml_data, language="yml")
 
     st.markdown(
@@ -142,7 +146,7 @@ else:
         )
 
     with st.expander(
-        "**What is the description column in the sample transaction file?**"
+        "**What is the description column in the example transaction file?**"
     ):
         st.markdown(
             """

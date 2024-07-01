@@ -53,9 +53,9 @@ def display_get_transactions_file(example_file=None):
         )
         if example_file:
             st.download_button(
-                label="Download sample transactions file",
+                label="Download example transactions file",
                 data=example_file,
-                file_name="sample_transactions_file.xlsx",
+                file_name="example_transactions_file.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             )
     return uploaded_file
@@ -105,9 +105,9 @@ def display_get_configuration_file(example_file=None):
         if example_file:
             # Create a download button
             st.download_button(
-                label="Download sample configuration file",
+                label="Download example configuration file",
                 data=example_file,
-                file_name="sample_dashboard_config.yaml",
+                file_name="example_dashboard_config.yaml",
                 mime="application/x-yaml",
             )
     return uploaded_file
