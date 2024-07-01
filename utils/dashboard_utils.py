@@ -42,7 +42,7 @@ def display_faq():
 
         After that, you can manually go through the transactions, correct any mistakes and fill in unclassified transactions.
 
-        If you are not experienced with excel or python, you can use [this application](https://personalfinancedashboard.streamlit.app/categorize_page).
+        If you are not experienced with excel or python, you can use [this application](https://personalfinancedashboard.streamlit.app/categorize_transactions).
         """,
             unsafe_allow_html=True,
         )
