@@ -1,0 +1,54 @@
+SUBCATEGORIES: # Under here, you list all the subcategories
+  TELECOM: # All transactions containing "MOBILE-PROVIDER" 
+    - MOBILE-PROVIDER # will be categorized as TELECOM
+  TRANSFERS:
+    - BE19 0000 0000 0000
+    - BE79 0000 0000 0000
+    - CASH-WITHDRAWL
+  GIFT:
+    - ONLINE_STORE
+    - GIFT
+  FASHION:
+    - CLOTHING-STORE
+  COFFEE:
+    - COFFEE
+  PUBLICTRANSPORT:
+    - TRAIN
+  EATING_OUT:
+    - RESTAURANT
+  WAGE:
+    - WAGE
+    - OTHER-INCOME
+  THEATER:
+    - THEATER
+  INTREST:
+    - INTREST
+  STARTING_BALANCE:
+    - STARTING_BALANCE 
+# You can add as many subcategories as you want.
+
+# Here you list all the categories and its associated
+# subcategories.
+CATEGORIES:
+  INCOME:
+    - STARTING_BALANCE
+    - INTREST
+    - WAGE
+  TRANSFERS:
+    - TRANSFERS
+  GIFT:
+    - GIFT
+    - CHARITY
+  FASHION:
+    - FASHION
+  FOOD:
+    - COFFEE
+    - EATING_OUT
+  MOBILITY:
+    - PUBLICTRANSPORT
+  FUN:
+    - BARS
+    - THEATER
+  SUBSCRIPTIONS:
+    - TELECOM
+# You can add as many categories as you want.
