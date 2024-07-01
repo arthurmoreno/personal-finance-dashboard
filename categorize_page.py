@@ -50,9 +50,7 @@ if (config_path is not None) & (file_path is not None):
     processor = TransactionProcessor(config)
 
     if "updated_df" not in st.session_state or st.session_state.updated_df is None:
-        categorized_data = processor.map_categories(org_data)
-        processor.validate_data(categorized_data)
-        categorized_data = processor.remove_columns(categorized_data)
+        categorized_data = processor.map_and_validate_categories(org_data)
     else:
         categorized_data = st.session_state.updated_df
 
