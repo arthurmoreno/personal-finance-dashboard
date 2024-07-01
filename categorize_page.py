@@ -18,10 +18,6 @@ from utils.constants import (
 if "i" not in st.session_state:
     st.session_state.i = 0
 
-st.set_page_config(
-    page_title="Finance Dashboard", page_icon=":bar_chart:", layout="wide"
-)
-
 # Let user upload transactions data
 file_path = display_get_transactions_file()
 uploaded_config = display_get_configuration_file()
