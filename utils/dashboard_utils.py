@@ -38,10 +38,13 @@ def display_faq():
         This is a difficult task. I suggest using excel or python to automatically classify
         the transactions based on the value in the description column.
 
+        If you are not experienced with excel or python, you can use [this application](https://personalfinancedashboard.streamlit.app/categorize_page).
+
         E.g. All transactions with the word "McDonalds" in the description can be in the "Food" category and "Fast-food" subcategory.
 
         After that, you can manually go through the transactions, correct any mistakes and fill in unclassified transactions.
-        """
+        """,
+            unsafe_allow_html=True,
         )
 
     with st.expander("**What categories should I have?**"):
