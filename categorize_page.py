@@ -150,8 +150,6 @@ else:
         <div class="main-header">Categorize Transactions:</div>
         <div class="sub-header">Take Control of Your Finances</div>
         <div class="intro-text">Welcome to a Streamlit-based personal finance dashboard. This intuitive dashboard is designed to give you a visual representation of your finances over time, empowering you to make informed decisions and achieve your financial goals.</div>
-        <div class="section-header">Privacy</div>
-        <div class="intro-text">This application is hosted on Streamlit Cloud. Terms of service of Streamlit Cloud therefore apply.</div>
         <div class="section-header">Requirements</div>
         <div class="subsection-header">Transactions data</div>
         """,

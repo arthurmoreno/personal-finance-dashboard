@@ -33,6 +33,10 @@ def display_contact_info():
             icon="github",
             url="https://github.com/NarekAra",
         )
+        st.markdown(
+            "<br>*This application is hosted on Streamlit Cloud. Terms of service of Streamlit Cloud therefore apply.*",
+            unsafe_allow_html=True,
+        )
 
 
 def display_date_picker(first_and_last_date):
@@ -194,8 +198,6 @@ def display_home(yaml_data):
             <li><strong>Category Filtering:</strong> Select 'Category' or 'Subcategory' to adjust the level of expense detail shown.</li>
             <li><strong>Account Selection:</strong> Use colored toggles to show/hide specific accounts in the visualizations.</li>
         </ul>
-        <div class="section-header">Privacy</div>
-        <div class="intro-text">This application is hosted on Streamlit Cloud. Terms of service of Streamlit Cloud therefore apply.</div>
         <div class="section-header">Requirements</div>
         <div class="subsection-header">Transactions data</div>
         """,
