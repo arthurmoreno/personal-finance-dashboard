@@ -1,0 +1,57 @@
+.main > div {
+    padding-left: 10%;
+    padding-right: 10%;
+}
+.main-header {
+    font-size: 42px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 0px;
+}
+.sub-header {
+    font-size: 24px;
+    text-align: center;
+    color: #2E9BF5;
+}
+.intro-text {
+    font-size: 18px;
+    margin-bottom: 5px;
+    margin-top: 20px;
+}
+.section-header {
+    font-size: 28px;
+    font-weight: bold;
+    margin-top: 30px;
+    margin-bottom: 10px;
+}
+.feature-list, .custom-list {
+    font-size: 18px;
+}
+.feature-list li, .custom-list li {
+    margin-bottom: 5px;
+}
+.subsection-header {
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+[data-testid='stFileUploader'] {
+    border: 4px solid #2E9BF5;
+    box-shadow: 3px 2px;
+    border-radius: 30px;
+    padding: 15px;
+    display: inline-block;
+    width: 100%;
+}
+[data-testid='stFileUploader'] section {
+    padding: 0;
+    float: left;
+}
+[data-testid='stFileUploader'] section > input + div {
+    display: none;
+}
+[data-testid='stFileUploader'] section + div {
+    float: right;
+    padding-top: 0;
+}
