@@ -56,12 +56,13 @@ if (config_path is not None) & (file_path is not None):
 
     grid_builder = GridOptionsBuilder.from_dataframe(categorized_data)
     grid_builder.configure_default_column(editable=True, flex=1)
-    for c in ["CATEGORY", "SUBCATEGORY"]:
+    for c in ["CATEGORIES", "SUBCATEGORIES"]:
+        col_name = {"CATEGORIES": "CATEGORY", "SUBCATEGORIES": "SUBCATEGORY"}[c]
         grid_builder.configure_column(
-            c,
+            col_name,
             cellEditor="agSelectCellEditor",
             cellEditorParams={
-                "values": sorted(list(set(categorized_data[c]))),
+                "values": sorted(set(config[c].keys())),
             },
         )
     grid_options = grid_builder.build()
