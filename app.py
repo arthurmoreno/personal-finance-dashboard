@@ -54,6 +54,25 @@ st.markdown(
         margin-top: 15px;
         margin-bottom: 15px;
     }
+    [data-testid='stFileUploader'] {
+        border: 4px solid #2E9BF5;
+        box-shadow: 3px 2px;
+        border-radius: 30px;
+        padding: 15px;
+        display: inline-block;
+        width: 100%;
+    }
+    [data-testid='stFileUploader'] section {
+        padding: 0;
+        float: left;
+    }
+    [data-testid='stFileUploader'] section > input + div {
+        display: none;
+    }
+    [data-testid='stFileUploader'] section + div {
+        float: right;
+        padding-top: 0;
+    }
     </style>
     """,
     unsafe_allow_html=True,
