@@ -53,7 +53,7 @@ class CalculateUtils:
 
     def calculate_net_value(self, df: DataFrame, time_frame_col: str):
         """Calculates the net value for all sources over time."""
-        st.write(df)
+        st.write(df.select([source_col, time_frame_col]))
         distinct_sources = df.select(source_col).unique()
         distinct_time = df.select(time_frame_col).unique()
 
