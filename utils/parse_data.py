@@ -86,7 +86,7 @@ class TransactionProcessor:
 
         if "TRANSACTION_ID" in data.columns:
             assert (  # this still has to be tested -- can also remove
-                data.groupby("TRANSACTION_ID")
+                data.group_by("TRANSACTION_ID")
                 .size()
                 .reset_index(name="count")
                 .query("count > 1")

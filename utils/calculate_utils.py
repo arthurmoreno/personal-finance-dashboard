@@ -18,7 +18,7 @@ class CalculateUtils:
     ):
         """Calculates the transactions per category."""
         df = (
-            df.groupby(time_frame_col, category_col)
+            df.group_by(time_frame_col, category_col)
             .agg(pl.sum(amount_col).alias(amount_col))
             .sort(category_col, time_frame_col)
             .select(time_frame_col, category_col, amount_col)
@@ -37,7 +37,7 @@ class CalculateUtils:
 
         income_outcome = (
             distinct_time_type.join(
-                df.groupby(time_frame_col, type_col).agg(
+                df.group_by(time_frame_col, type_col).agg(
                     pl.sum(amount_col).alias(amount_col)
                 ),
                 on=[time_frame_col, type_col],
