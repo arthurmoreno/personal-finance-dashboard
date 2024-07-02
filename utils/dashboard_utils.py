@@ -99,15 +99,13 @@ def display_date_picker(first_and_last_date):
     return day_start, day_end
 
 
-def display_get_transactions_file(example_file=None):
+def display_get_transactions_file(title, example_file=None):
     """Displays the file uploader and returns the uploaded file."""
     with st.sidebar:
-        uploaded_file = st.file_uploader(
-            "Upload the transactions.", key="transactions_file"
-        )
+        uploaded_file = st.file_uploader(f"Upload the {title}", key=title)
         if example_file:
             st.download_button(
-                label="Download example transactions file",
+                label="Download example",
                 data=example_file,
                 file_name="example_transactions_file.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -152,14 +150,14 @@ def display_data(df):
         st.dataframe(df)
 
 
-def display_get_configuration_file(example_file=None):
+def display_get_configuration_file(title, example_file=None):
     """Displays the file uploader and returns the uploaded file."""
     with st.sidebar:
-        uploaded_file = st.file_uploader("Upload the configuration file.", key="config")
+        uploaded_file = st.file_uploader(f"Upload the {title}", key=title)
         if example_file:
             # Create a download button
             st.download_button(
-                label="Download example configuration file",
+                label="Download example",
                 data=example_file,
                 file_name="example_dashboard_config.yaml",
                 mime="application/x-yaml",

@@ -22,7 +22,9 @@ if "i" not in st.session_state:
 
 # Let user upload transactions data
 example_transactions_data = df_to_excel(pd.read_excel(example_transactions_path))
-file_path = display_get_transactions_file(example_file=example_transactions_data)
+file_path = display_get_transactions_file(
+    title="transactions (.xlsx)", example_file=example_transactions_data
+)
 
 # Let user upload their configuration file
 with open(
@@ -30,7 +32,9 @@ with open(
     "r",
 ) as file:
     example_config_data = file.read()
-config_path = display_get_configuration_file(example_file=example_config_data)
+config_path = display_get_configuration_file(
+    title="categorization mapping (.yml)", example_file=example_config_data
+)
 display_contact_info()
 
 if (config_path is not None) & (file_path is not None):

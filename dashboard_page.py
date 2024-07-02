@@ -39,8 +39,12 @@ with open(
     yaml_data = file.read()
 
 # Let user upload transactions data
-file_path = display_get_transactions_file(example_file=example_transactions_data)
-uploaded_config = display_get_configuration_file(example_file=yaml_data)
+file_path = display_get_transactions_file(
+    title="categorized transactions (.xlsx)", example_file=example_transactions_data
+)
+uploaded_config = display_get_configuration_file(
+    title="dashboard config (.yml)", example_file=yaml_data
+)
 
 display_contact_info()
 
