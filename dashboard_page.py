@@ -78,7 +78,6 @@ if file_path is not None:
     # Give user option to select a source, timeframe granularity, and category granularity.
     time_frame_col, category_col = display_tabs()
     # Display the net value of every source as a lineplot and as tiles
-    st.dataframe(data)
     plot_dashboard_utils.display_net_value(data, time_frame_col, all_sources)
     # Display the income and outcome for the selected source over time as a lineplot
     # Display the transactions per category over time as a barplot
