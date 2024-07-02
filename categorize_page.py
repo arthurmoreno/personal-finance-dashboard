@@ -114,7 +114,7 @@ else:
         unsafe_allow_html=True,
     )
     st.warning(
-        '👈 Upload an excel (.xlsx) file in the sidebar or click *"Download example transactions"* to get started!'
+        '👈 Upload an excel (.xlsx) file in the sidebar or click *"Download example"* to get started!'
     )
     st.info(
         "In order to categorize your transactions, only a description is sufficient. However, if you would like to use the dashboard later on, it is recommend to have an excel file structured like this:",
@@ -129,7 +129,7 @@ else:
         unsafe_allow_html=True,
     )
     st.warning(
-        '👈 Upload a configuration file (.yml) in the sidebar or click *"Download example configuration file"* to get started!'
+        '👈 Upload a configuration file (.yml) in the sidebar or click *"Download example"* to get started!'
     )
     st.info(
         "This file will contain the rules for categorizing your transactions. Every transaction should only have 1 subcategory. Every subcategory should have exactly 1 category.",

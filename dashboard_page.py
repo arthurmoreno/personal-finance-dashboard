@@ -115,7 +115,7 @@ else:
         unsafe_allow_html=True,
     )
     st.warning(
-        '👈 Upload an excel (.xlsx) file in the sidebar or click *"Download example transactions"* to get started!'
+        '👈 Upload an excel (.xlsx) file in the sidebar or click *"Download example"* to get started!'
     )
     st.info(
         "The transactions should be structured like this:",
@@ -127,7 +127,7 @@ else:
         unsafe_allow_html=True,
     )
     st.warning(
-        '👈 Optionally upload a configuration file (.yml) in the sidebar or click *"Download example configuration file"* to get started!'
+        '👈 Optionally upload a configuration file (.yml) in the sidebar or click *"Download example"* to get started!'
     )
     st.info(
         "The configuration file should be structured like this:",
