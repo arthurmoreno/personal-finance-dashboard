@@ -43,7 +43,7 @@ file_path = display_get_transactions_file(
     title="categorized transactions (.xlsx)", example_file=example_transactions_data
 )
 uploaded_config = display_get_configuration_file(
-    title="dashboard config (.yml)", example_file=yaml_data
+    title="dashboard configuration (.yml)", example_file=yaml_data
 )
 
 display_contact_info()
