@@ -58,7 +58,7 @@ class CalculateUtils:
         net_value_per_source = (
             distinct_sources.join(distinct_time, how="cross")
             .join(
-                df.groupby([source_col, time_frame_col])
+                df.group_by([source_col, time_frame_col])
                 .agg(pl.sum(amount_col).alias("NET_VALUE"))
                 .sort(source_col, time_frame_col)
                 .with_columns(
@@ -82,7 +82,7 @@ class CalculateUtils:
         )
 
         net_value_total = (
-            net_value_per_source.groupby(time_frame_col)
+            net_value_per_source.group_by(time_frame_col)
             .agg(pl.sum("NET_VALUE").alias("NET_VALUE"))
             .with_columns(pl.lit("Total").alias(source_col))
             .sort(time_frame_col)
