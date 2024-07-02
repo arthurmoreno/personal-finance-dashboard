@@ -6,6 +6,7 @@ from utils.constants import (
     source_col,
     type_col,
 )
+import streamlit as st
 
 
 class CalculateUtils:
@@ -52,6 +53,7 @@ class CalculateUtils:
 
     def calculate_net_value(self, df: DataFrame, time_frame_col: str):
         """Calculates the net value for all sources over time."""
+        st.write(df)
         distinct_sources = df.select(source_col).unique()
         distinct_time = df.select(time_frame_col).unique()
 
