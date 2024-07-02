@@ -1,26 +1,29 @@
 SUBCATEGORIES: # Under here, you list all the subcategories
-  TELECOM: # All transactions containing "MOBILE-PROVIDER" 
-    - MOBILE-PROVIDER # will be categorized as TELECOM
+  TELECOM: # All transactions containing "BASE" 
+    - BASE # will be categorized as TELECOM
   TRANSFERS:
     - BE19 0000 0000 0000
     - BE79 0000 0000 0000
     - CASH-WITHDRAWL
   GIFT:
-    - ONLINE_STORE
+    - AMAZON
+    - COOLBLUE
     - GIFT
   FASHION:
-    - CLOTHING-STORE
+    - ZARA
   COFFEE:
-    - COFFEE
+    - CUPERUS-ANTWERP
   PUBLICTRANSPORT:
-    - TRAIN
+    - NMBS
   EATING_OUT:
-    - RESTAURANT
+    - BOZAR
+    - NIGHTHAWKS-BAR
+    - PONCHIK-MONCHIK
   WAGE:
     - WAGE
-    - OTHER-INCOME
-  THEATER:
-    - THEATER
+    - TEACHING-GIG
+  SHOWS:
+    - ANTWERP-OPERA
   INTREST:
     - INTREST
   STARTING_BALANCE:
@@ -47,8 +50,7 @@ CATEGORIES:
   MOBILITY:
     - PUBLICTRANSPORT
   FUN:
-    - BARS
-    - THEATER
+    - SHOWS
   SUBSCRIPTIONS:
     - TELECOM
 # You can add as many categories as you want.
