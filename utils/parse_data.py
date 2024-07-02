@@ -18,11 +18,14 @@ class TransactionProcessor:
         )
 
         subcategories = self.config["SUBCATEGORIES"]
-        for subcategory, matches in subcategories.items():
+        for (
+            subcategory,
+            matches,
+        ) in subcategories.items():  # TODO: what if string contains "|"
             pattern = "|".join(re.escape(match) for match in matches)
-            cond = (data["DESCRIPTION"].str.contains(pattern, na=False)) & (
-                data["SUBCATEGORY"] == "UNKNOWN"
-            )
+
+            cond = data["DESCRIPTION"].str.contains(pattern, na=False)
+
             data.loc[
                 cond,
                 "SUBCATEGORY_COUNT",
@@ -47,7 +50,6 @@ class TransactionProcessor:
 
     def validate_data(self, data):
         """Validates the processed data to ensure there are no duplicate categories or subcategories and all transactions are categorized correctly."""
-
         try:
             assert data[data["SUBCATEGORY_COUNT"] > 1].shape[0] == 0
         except AssertionError as e:
