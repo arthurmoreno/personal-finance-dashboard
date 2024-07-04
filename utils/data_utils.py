@@ -91,7 +91,8 @@ class ConfigData(BaseModel):
 
 def validate_config_format(config):
     try:
-        data = ConfigData(**config)  # Pass data to the Pydantic model for validation
-        return {"data": data}
+        ConfigData(**config)  # Pass data to the Pydantic model for validation
     except ValidationError as e:
-        return {"errors": e.errors()}  # Extract validation errors
+        for error in e.errors():
+            st.error(error["loc"][0] + " " + error["msg"])
+            st.stop()
