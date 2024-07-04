@@ -30,3 +30,6 @@ goals:
   - FOOD: 40
   - SUBSCRIPTIONS: 20
   - FASHION: 100
+  - TEST: 20
+  - INCOME: test
+  - FUN: -10

@@ -99,7 +99,7 @@ if file_path is not None:
         )
 
     # Only plot the heatmap of the goals if goals are provided.
-    if config["goals"] != []:
+    if config["goals"] != {}:
         heatmap = plot_dashboard_utils.display_goals_heatmap(data)
         heatmap
 
