@@ -6,6 +6,7 @@ from utils.constants import (
     type_col,
 )
 import pandas as pd
+import streamlit as st
 
 
 class CalculateUtils:
@@ -118,13 +119,10 @@ class CalculateUtils:
         - pd.DataFrame: Pivot table showing whether spending goals were achieved per category each month.
         """
         # Normalize goal spending data
-        normalized_data = {
-            list(d.keys())[0]: list(d.values())[0] for d in goal_spending
-        }
-        goals_df = pd.DataFrame(
-            normalized_data.items(), columns=["CATEGORY", "MAX_AMOUNT"]
-        )
-
+        normalized_data = [
+            (category, amount) for category, amount in goal_spending.items()
+        ]
+        goals_df = pd.DataFrame(normalized_data, columns=["CATEGORY", "MAX_AMOUNT"])
         # Calculate actual spending per category
         actual_spending = CalculateUtils.calculate_transactions_per_category(
             df, "CATEGORY", "YEAR_MONTH"

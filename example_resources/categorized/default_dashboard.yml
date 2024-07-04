@@ -33,5 +33,5 @@ income_category: INCOME
 
 # Here you can define some financial goals per month per category.
 # For an example, download the example configutation file provided.
-# Default value: []
-goals: []
+# Default value: {}
+goals: {}

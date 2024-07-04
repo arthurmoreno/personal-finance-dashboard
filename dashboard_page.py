@@ -17,6 +17,7 @@ from utils.data_utils import (
     filter_data,
     get_first_last_date,
     get_all_sources,
+    validate_config_format,
 )
 from utils.constants import (
     default_dashboard_config_path,
@@ -50,6 +51,12 @@ display_contact_info()
 
 if uploaded_config is not None:
     config = yaml.safe_load(uploaded_config)
+    result = validate_config_format(config)
+
+    if "errors" in result:
+        for error in result["errors"]:
+            st.error(error["loc"][0] + " " + error["msg"])
+            st.stop()
 else:
     with open(default_dashboard_config_path) as stream:
         try:

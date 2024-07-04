@@ -3,6 +3,8 @@ import polars as pl
 from utils.constants import source_col, date_col
 import pandera as pa
 import pandas as pd
+from typing import List, Dict
+from pydantic import BaseModel, ValidationError, StrictBool
 
 
 def get_all_sources(df):
@@ -74,3 +76,22 @@ def validate_data(df):
     except pa.errors.SchemaError as e:
         st.error(e)
         st.stop()
+
+
+class ConfigData(BaseModel):
+    display_data: StrictBool
+    currency: str
+    hidden_categories_from_barplot: List[str]
+    pieplot_colors: List[str]
+    lineplot_colors: Dict[str, str]
+    lineplot_width: Dict[str, int]
+    income_category: str
+    goals: Dict[str, int]
+
+
+def validate_config_format(config):
+    try:
+        data = ConfigData(**config)  # Pass data to the Pydantic model for validation
+        return {"data": data}
+    except ValidationError as e:
+        return {"errors": e.errors()}  # Extract validation errors
