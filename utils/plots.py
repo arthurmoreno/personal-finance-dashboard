@@ -184,5 +184,4 @@ class PlotUtils:
             )
         layout = go.Layout(shapes=scatter_lines)
         fig = go.Figure(data=[heatmap], layout=layout)
-        st.write(heatmap)
         return fig
