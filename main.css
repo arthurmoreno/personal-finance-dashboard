@@ -55,3 +55,6 @@
     float: right;
     padding-top: 0;
 }
+[data-testid='stFileUploaderFile']{
+    display: none
+}
