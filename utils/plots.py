@@ -128,3 +128,61 @@ class PlotUtils:
             .add_selection(operation_select)
         )
         return pie_plot
+
+    def plot_goals_heatmap(self, df: DataFrame):
+
+        colorscale = [  # "ylgn" colorscale
+            [0, "rgb(255,255,229)"],
+            [1, "rgb(0,69,41)"],
+        ]
+        hovertext = [
+            [
+                f'Month: {month}<br>Category: {category}<br>Goal: {"ACHIEVED" if value == 1 else "NOT ACHIEVED"}'
+                for month, value in zip(df.columns, values)
+            ]
+            for category, values in df.iterrows()
+        ]
+
+        heatmap = go.Heatmap(
+            z=df,
+            colorscale=colorscale,
+            x=list(df.columns),
+            y=list(df.index),
+            hoverinfo="text",
+            text=hovertext,
+            showscale=False,
+        )
+
+        # Get the years
+        years = [x for x in list(df.columns) if "December" in x]
+
+        # Create a list of lines, one for each year
+        scatter_lines = []
+        offset = 0.5
+        for i in years:
+            scatter_lines.append(
+                {
+                    "type": "line",
+                    "x0": i,
+                    "y0": -offset,
+                    "x1": i,
+                    "y1": len(list(df.index)) - offset,
+                    "line": {"color": "#DDDDDD", "width": 2},
+                }
+            )
+
+        for i in range(len(list(df.index)) - 1):
+            scatter_lines.append(
+                {
+                    "type": "line",
+                    "x0": -offset,
+                    "y0": i + offset,
+                    "x1": len(list(df.columns)) - offset,
+                    "y1": i + offset,
+                    "line": {"color": "#DDDDDD", "width": 2},
+                }
+            )
+        layout = go.Layout(shapes=scatter_lines)
+        fig = go.Figure(data=[heatmap], layout=layout)
+        st.write(heatmap)
+        return fig

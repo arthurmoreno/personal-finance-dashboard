@@ -81,8 +81,10 @@ if file_path is not None:
 
     # Give user option to select a source, timeframe granularity, and category granularity.
     time_frame_col, category_col = display_tabs()
+
     # Display the net value of every source as a lineplot and as tiles
     plot_dashboard_utils.display_net_value(data, time_frame_col, all_sources)
+
     # Display the income and outcome for the selected source over time as a lineplot
     # Display the transactions per category over time as a barplot
     sources = display_sources(all_sources)
@@ -95,8 +97,17 @@ if file_path is not None:
         plot_dashboard_utils.display_transactions_per_category(
             data, category_col, time_frame_col
         )
+
+    # Only plot the heatmap of the goals if goals are provided.
+    if config["goals"] != []:
+        heatmap = plot_dashboard_utils.display_goals_heatmap(data)
+        heatmap
+
+    # Plot pieplot of the income
+    _, col_center, _ = st.columns(3)
     pieplot = plot_dashboard_utils.display_pieplot(data)
-    pieplot
+    with col_center:
+        pieplot
 else:
     st.markdown(
         """
