@@ -27,6 +27,6 @@ lineplot_width:
 income_category: INCOME
 
 goals:
-  - FOOD: 40
-  - SUBSCRIPTIONS: 20
-  - FASHION: 100
+  FOOD: 40
+  SUBSCRIPTIONS: 20
+  FASHION: 100
