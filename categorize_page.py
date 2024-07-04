@@ -14,6 +14,10 @@ from utils.constants import (
     example_transactions_path,
     data_structure_path,
 )
+from utils.data_utils import (
+    validate_config_format,
+    MappingConfigData,
+)
 
 # Needed to reload the AgGrid
 if "i" not in st.session_state:
@@ -32,6 +36,7 @@ with open(
     "r",
 ) as file:
     example_config_data = file.read()
+
 config_path = display_get_configuration_file(
     title="categorization mapping (.yml)", example_file=example_config_data
 )
@@ -50,6 +55,7 @@ if (config_path is not None) & (file_path is not None):
         unsafe_allow_html=True,
     )
     config = yaml.safe_load(config_path)
+    validate_config_format(config, MappingConfigData)
     org_data = pd.read_excel(file_path)
     processor = TransactionProcessor(config)
 

@@ -78,7 +78,7 @@ def validate_data(df):
         st.stop()
 
 
-class ConfigData(BaseModel):
+class DashboardConfigData(BaseModel):
     display_data: StrictBool
     currency: str
     hidden_categories_from_barplot: List[str]
@@ -89,9 +89,14 @@ class ConfigData(BaseModel):
     goals: Dict[str, int]
 
 
-def validate_config_format(config):
+class MappingConfigData(BaseModel):
+    CATEGORIES: Dict[str, List[str]]
+    SUBCATEGORIES: Dict[str, List[str]]
+
+
+def validate_config_format(config, config_data_class):
     try:
-        ConfigData(**config)  # Pass data to the Pydantic model for validation
+        config_data_class(**config)  # Pass data to the Pydantic model for validation
     except ValidationError as e:
         for error in e.errors():
             st.error(error["loc"][0] + " " + error["msg"])

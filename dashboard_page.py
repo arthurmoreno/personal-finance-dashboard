@@ -18,6 +18,7 @@ from utils.data_utils import (
     get_first_last_date,
     get_all_sources,
     validate_config_format,
+    DashboardConfigData,
 )
 from utils.constants import (
     default_dashboard_config_path,
@@ -51,7 +52,7 @@ display_contact_info()
 
 if uploaded_config is not None:
     config = yaml.safe_load(uploaded_config)
-    validate_config_format(config)
+    validate_config_format(config, DashboardConfigData)
 
 else:
     with open(default_dashboard_config_path) as stream:
