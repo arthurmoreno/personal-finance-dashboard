@@ -12,10 +12,10 @@ class TransactionProcessor:
                 SUBCATEGORY="UNKNOWN",
                 CATEGORY="UNKNOWN",
             )
-        data = data.assign(
-            SUBCATEGORY_COUNT=0,
-            CATEGORY_COUNT=0,
-        )
+            data = data.assign(
+                SUBCATEGORY_COUNT=0,
+                CATEGORY_COUNT=0,
+            )
 
         subcategories = self.config["SUBCATEGORIES"]
         for (
@@ -25,11 +25,11 @@ class TransactionProcessor:
             pattern = "|".join(re.escape(match) for match in matches)
 
             cond = data["DESCRIPTION"].str.contains(pattern, na=False)
-
-            data.loc[
-                cond,
-                "SUBCATEGORY_COUNT",
-            ] += 1
+            if first_time:
+                data.loc[
+                    cond,
+                    "SUBCATEGORY_COUNT",
+                ] += 1
             data.loc[
                 cond,
                 "SUBCATEGORY",
@@ -38,10 +38,11 @@ class TransactionProcessor:
         categories = self.config["CATEGORIES"]
         for category, matches in categories.items():
             cond = data["SUBCATEGORY"].apply(lambda x: x in matches)
-            data.loc[
-                cond,
-                "CATEGORY_COUNT",
-            ] += 1
+            if first_time:
+                data.loc[
+                    cond,
+                    "CATEGORY_COUNT",
+                ] += 1
             data.loc[
                 cond,
                 "CATEGORY",
