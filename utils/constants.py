@@ -12,7 +12,7 @@ category_col_mapping = {
     "Subcategory": "SUBCATEGORY",
 }
 
-default_dashboard_config_path = "example_resources/categorized/default_dashboard.yml"
+default_dashboard_config_path = "default_dashboard.yml"
 categorized_data_structure_path = "example_resources/categorized/data_structure.xlsx"
 example_categorized_transactions_path = (
     "example_resources/categorized/transactions.xlsx"
