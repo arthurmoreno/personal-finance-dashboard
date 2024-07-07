@@ -20,22 +20,17 @@ from utils.data_utils import (
     validate_config_format,
     DashboardConfigData,
 )
-from utils.constants import (
-    default_dashboard_config_path,
-    example_categorized_transactions_path,
-    exaple_dashboard_config_path,
-    categorized_data_structure_path,
-)
+from utils.constants import paths
 import polars as pl
 import yaml
 import pandas as pd
 
-data_structure = pd.read_excel(categorized_data_structure_path)
+data_structure = pd.read_excel(paths["categorized_data_structure"])
 example_transactions_data = df_to_excel(
-    pd.read_excel(example_categorized_transactions_path)
+    pd.read_excel(paths["example_categorized_transactions"])
 )
 with open(
-    exaple_dashboard_config_path,
+    paths["exaple_dashboard_config"],
     "r",
 ) as file:
     yaml_data = file.read()
@@ -55,7 +50,7 @@ if uploaded_config is not None:
     validate_config_format(config, DashboardConfigData)
 
 else:
-    with open(default_dashboard_config_path) as stream:
+    with open(paths["default_dashboard_config"]) as stream:
         try:
             config = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
