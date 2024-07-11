@@ -6,24 +6,12 @@ from st_aggrid import JsCode, GridOptionsBuilder, AgGrid
 from utils.dashboard_utils import (
     display_get_transactions_file,
     display_get_configuration_file,
-    display_contact_info,
     df_to_excel,
 )
 from utils.constants import paths
 from utils.data_utils import (
     validate_config_format,
     MappingConfigData,
-)
-
-# Needed to reload the AgGrid
-if "i" not in st.session_state:
-    st.session_state.i = 0
-
-
-# Let user upload transactions data
-example_transactions_data = df_to_excel(pd.read_excel(paths["example_transactions"]))
-file_path = display_get_transactions_file(
-    title="transactions (.xlsx)", example_file=example_transactions_data
 )
 
 # Let user upload their configuration file
@@ -33,10 +21,18 @@ with open(
 ) as file:
     example_config_data = file.read()
 
-config_path = display_get_configuration_file(
-    title="categorization mapping (.yml)", example_file=example_config_data
-)
-display_contact_info()
+# Let user upload transactions data
+example_transactions_data = df_to_excel(pd.read_excel(paths["example_transactions"]))
+cols = st.columns(2)
+with cols[0]:
+    file_path = display_get_transactions_file(
+        title="Upload transactions (.xlsx)", example_file=example_transactions_data
+    )
+with cols[1]:
+    config_path = display_get_configuration_file(
+        title="Upload categorization mapping (.yml)", example_file=example_config_data
+    )
+
 
 if (config_path is not None) & (file_path is not None):
     st.markdown(
@@ -86,11 +82,11 @@ if (config_path is not None) & (file_path is not None):
         data=categorized_data,
         gridOptions=grid_options,
         allow_unsafe_jscode=True,
-        key=f"grid_{st.session_state.i}",
+        key=f"grid_{st.session_state.AgGrid_i}",
     )
 
     if st.button("Fill in category"):
-        st.session_state.i += 1
+        st.session_state.AgGrid_i += 1
         categorized_data = res["data"]
         categorized_data = processor.map_categories(categorized_data, False)
         st.session_state.updated_df = categorized_data
@@ -116,7 +112,7 @@ else:
         unsafe_allow_html=True,
     )
     st.warning(
-        '👈 Upload an excel (.xlsx) file in the sidebar or click *"Download example"* to get started!'
+        '☝️ Upload an excel (.xlsx) file or click *"Download example"* to get started!'
     )
     st.info(
         "In order to categorize your transactions, only a description is sufficient. However, if you would like to use the dashboard later on, it is recommend to have an excel file structured like this:",
@@ -131,7 +127,7 @@ else:
         unsafe_allow_html=True,
     )
     st.warning(
-        '👈 Upload a configuration file (.yml) in the sidebar or click *"Download example"* to get started!'
+        '☝️ Upload a configuration file (.yml) or click *"Download example"* to get started!'
     )
     st.info(
         "This file will contain the rules for categorizing your transactions. Every transaction should only have 1 subcategory. Every subcategory should have exactly 1 category.",

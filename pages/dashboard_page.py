@@ -1,14 +1,10 @@
 import streamlit as st
 from utils.plot_dashboard_utils import PlotDashboardUtils
 from utils.dashboard_utils import (
-    display_get_transactions_file,
-    display_get_configuration_file,
     display_data,
     display_sources,
     display_tabs,
     display_date_picker,
-    display_contact_info,
-    df_to_excel,
     display_faq,
 )
 from utils.data_utils import (
@@ -17,49 +13,25 @@ from utils.data_utils import (
     filter_data,
     get_first_last_date,
     get_all_sources,
-    validate_config_format,
-    DashboardConfigData,
 )
 from utils.constants import paths
 import polars as pl
-import yaml
 import pandas as pd
 
 data_structure = pd.read_excel(paths["categorized_data_structure"])
-example_transactions_data = df_to_excel(
-    pd.read_excel(paths["example_categorized_transactions"])
-)
-with open(
-    paths["exaple_dashboard_config"],
-    "r",
-) as file:
-    yaml_data = file.read()
 
-# Let user upload transactions data
-file_path = display_get_transactions_file(
-    title="categorized transactions (.xlsx)", example_file=example_transactions_data
-)
-uploaded_config = display_get_configuration_file(
-    title="dashboard configuration (.yml)", example_file=yaml_data
-)
+org_data = None
+# if user is logged in, check if they have a file uploaded
+if (st.session_state.file is not None) and (st.session_state.user_logged_in):
+    pass
+    # TODO after integrating firebase
+if (st.session_state.file is not None) and (not st.session_state.user_logged_in):
+    org_data = st.session_state.file
 
-display_contact_info()
+plot_dashboard_utils = PlotDashboardUtils(st.session_state.config)
 
-if uploaded_config is not None:
-    config = yaml.safe_load(uploaded_config)
-    validate_config_format(config, DashboardConfigData)
-
-else:
-    with open(paths["default_dashboard_config"]) as stream:
-        try:
-            config = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
-
-plot_dashboard_utils = PlotDashboardUtils(config)
-
-if file_path is not None:
-    org_data = pl.read_excel(file_path)
+if org_data is not None:
+    org_data = pl.from_pandas(org_data)
     validate_data(org_data)
     data = add_columns(org_data)
 
@@ -72,7 +44,7 @@ if file_path is not None:
     data = filter_data(data, start_date, end_date)
 
     # Display the data in tabular form
-    if config["display_data"]:
+    if st.session_state.config["display_data"]:
         display_data(org_data)
 
     # Get all possible sources within the tiemfeame
@@ -98,15 +70,16 @@ if file_path is not None:
         )
 
     # Only plot the heatmap of the goals if goals are provided.
-    if config["goals"] != {}:
+    if st.session_state.config["goals"] != {}:
         heatmap = plot_dashboard_utils.display_goals_heatmap(data)
-        heatmap
+        heatmap  # TODO: why is income goal of 100 never achieved?
 
-    # Plot pieplot of the income
-    _, col_center, _ = st.columns(3)
-    pieplot = plot_dashboard_utils.display_pieplot(data)
-    with col_center:
-        pieplot
+    # Plot pieplot of the income -- only if the income category is known.
+    if st.session_state.income_category_index is not None:
+        _, col_center, _ = st.columns(3)
+        pieplot = plot_dashboard_utils.display_pieplot(data)
+        with col_center:
+            pieplot
 else:
     st.markdown(
         """
@@ -119,13 +92,12 @@ else:
             <li><strong>Monitor your cash flow</strong> 💸: Stay on top of your incoming and outgoing funds. This dashboard provides clear insight into your current financial liquidity, allowing you to plan for upcoming expenses and avoid potential shortfalls. Anticipate cash crunches and optimize your spending timing to maintain a healthy financial balance.</li>
             <li><strong>View your financial progress</strong> 📈: Charts and graphs track your progress towards your financial goals over time. Whether you're saving for a dream vacation or planning for retirement, this dashboard keeps you motivated and on track. Visualize your long-term financial journey and adjust your strategies based on real-time performance data.</li>
         </ul>
-        <div class="section-header">Requirements</div>
-        <div class="subsection-header">Transactions data</div>
+        <div class="section-header">Transactions data</div>
         """,
         unsafe_allow_html=True,
     )
     st.warning(
-        '👈 Upload an excel (.xlsx) file in the sidebar or click *"Download example"* to get started!'
+        "👈 Upload an excel (.xlsx) file in the dashboard settings to get started! An example file is provided."
     )
     st.info(
         "The transactions should be structured like this:",
@@ -133,21 +105,9 @@ else:
     )
     st.dataframe(data_structure)
     st.markdown(
-        '<div class="subsection-header">Configuration file</div>',
+        """
+        <div class="section-header">FAQ</div>
+        """,
         unsafe_allow_html=True,
     )
-    st.warning(
-        '👈 Optionally upload a configuration file (.yml) in the sidebar or click *"Download example"* to get started!'
-    )
-    st.info(
-        "The configuration file should be structured like this:",
-        icon="ℹ️",
-    )
-    st.code(yaml_data, language="yml")
-
-    st.markdown(
-        '<div class="section-header">Frequently Asked Questions</div>',
-        unsafe_allow_html=True,
-    )
-
     display_faq()

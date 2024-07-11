@@ -66,7 +66,6 @@ def display_faq():
 
 def display_contact_info():
     with st.sidebar:
-        st.divider()
         st.markdown(
             """
         Get in touch:
@@ -101,15 +100,14 @@ def display_date_picker(first_and_last_date):
 
 def display_get_transactions_file(title, example_file=None):
     """Displays the file uploader and returns the uploaded file."""
-    with st.sidebar:
-        uploaded_file = st.file_uploader(f"Upload the {title}", key=title)
-        if example_file:
-            st.download_button(
-                label="Download example",
-                data=example_file,
-                file_name="example_transactions_file.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            )
+    uploaded_file = st.file_uploader(title, key=title)
+    if example_file:
+        st.download_button(
+            label="Download example",
+            data=example_file,
+            file_name="example_transactions_file.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
     return uploaded_file
 
 
@@ -152,16 +150,15 @@ def display_data(df):
 
 def display_get_configuration_file(title, example_file=None):
     """Displays the file uploader and returns the uploaded file."""
-    with st.sidebar:
-        uploaded_file = st.file_uploader(f"Upload the {title}", key=title)
-        if example_file:
-            # Create a download button
-            st.download_button(
-                label="Download example",
-                data=example_file,
-                file_name="example_dashboard_config.yaml",
-                mime="application/x-yaml",
-            )
+    uploaded_file = st.file_uploader(title, key=title)
+    if example_file:
+        # Create a download button
+        st.download_button(
+            label="Download example",
+            data=example_file,
+            file_name="example_dashboard_config.yaml",
+            mime="application/x-yaml",
+        )
     return uploaded_file
 
 
@@ -173,3 +170,95 @@ def df_to_excel(df):
     writer.close()
     processed_data = output.getvalue()
     return processed_data
+
+
+MAX_COLS = 4
+
+
+def get_checkbox_options(options, config, config_name):
+    """
+    Create a grid of checkboxes for given options.
+
+    Args:
+    options (list): List of option names.
+
+    Returns:
+    list: A list of selected options.
+    """
+    if config is not None:
+        config = config[config_name]
+    n_cols = min(len(options), MAX_COLS)
+    selected_options = []
+
+    for i in range(0, len(options), n_cols):
+        cols = st.columns(n_cols)
+        for col, option in enumerate(options[i : i + n_cols]):
+            with cols[col]:
+                if st.checkbox(
+                    option,
+                    value=(option in config) if config else False,
+                ):
+                    selected_options.append(option)
+
+    return selected_options
+
+
+def get_color_picker_options(options, config, config_name):
+    """
+    Create a grid of color pickers for given options.
+
+    Args:
+    options (list): List of option names.
+    label_prefix (str): Prefix for the color picker labels.
+
+    Returns:
+    dict: A dictionary mapping option names to their selected colors.
+    """
+    if config is not None:
+        config = config[config_name]
+    n_cols = min(len(options), MAX_COLS)
+    color_options = {}
+
+    for i in range(0, len(options), n_cols):
+        cols = st.columns(n_cols)
+        for col, option in enumerate(options[i : i + n_cols]):
+            with cols[col]:
+                color = st.color_picker(
+                    label=f"Color for {option}",
+                    key=option,
+                    value=config[option] if config else "#000000",
+                )
+                color_options[option] = color
+
+    return color_options
+
+
+def get_number_input_options(options, value, min_value, max_value, config, config_name):
+    """
+    Create a grid of color pickers for given options.
+
+    Args:
+    options (list): List of option names.
+    label_prefix (str): Prefix for the color picker labels.
+
+    Returns:
+    dict: A dictionary mapping option names to their selected colors.
+    """
+    if config is not None:
+        config = config[config_name]
+    n_cols = min(len(options), MAX_COLS)
+    width_options = {}
+
+    for i in range(0, len(options), n_cols):
+        cols = st.columns(n_cols)
+        for col, option in enumerate(options[i : i + n_cols]):
+            with cols[col]:
+                width = st.number_input(
+                    option,
+                    value=config[option] if config else value,
+                    min_value=min_value,
+                    max_value=max_value,
+                )
+                width_options[option] = width
+
+    return width_options
