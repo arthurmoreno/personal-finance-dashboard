@@ -1,2 +1,4 @@
 my_resources
 __pycache__/
+.archive/
+.env
