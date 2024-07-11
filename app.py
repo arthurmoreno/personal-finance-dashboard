@@ -1,8 +1,6 @@
 import streamlit as st
-
 import yaml
 from utils.constants import paths
-
 from utils.dashboard_utils import (
     display_contact_info,
 )
@@ -11,16 +9,18 @@ st.set_page_config(
     layout="wide",
 )
 categorize_page = st.Page(
-    "pages/categorize_page.py",
+    "app_pages/categorize_page.py",
     title="Categorize Transactions",
     icon=":material/assignment_turned_in:",
     url_path="categorize_transactions",
 )
 dashboard_page = st.Page(
-    "pages/dashboard_page.py", title="Dashboard", icon=":material/bar_chart_4_bars:"
+    "app_pages/dashboard_page.py", title="Dashboard", icon=":material/bar_chart_4_bars:"
 )
 dashboard_settings = st.Page(
-    "pages/dashboard_settings.py", title="Dashboard Settings", icon=":material/bolt:"
+    "app_pages/dashboard_settings.py",
+    title="Dashboard Settings",
+    icon=":material/bolt:",
 )
 
 
