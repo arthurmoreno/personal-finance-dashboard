@@ -5,7 +5,6 @@ from utils.dashboard_utils import (
     display_sources,
     display_tabs,
     display_date_picker,
-    display_contact_info,
     display_faq,
 )
 from utils.data_utils import (
@@ -15,13 +14,11 @@ from utils.data_utils import (
     get_first_last_date,
     get_all_sources,
 )
-from utils.constants import (
-    categorized_data_structure_path,
-)
+from utils.constants import paths
 import polars as pl
 import pandas as pd
 
-data_structure = pd.read_excel(categorized_data_structure_path)
+data_structure = pd.read_excel(paths["categorized_data_structure_path"])
 
 org_data = None
 # if user is logged in, check if they have a file uploaded

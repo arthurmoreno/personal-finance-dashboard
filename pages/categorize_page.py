@@ -9,11 +9,7 @@ from utils.dashboard_utils import (
     display_contact_info,
     df_to_excel,
 )
-from utils.constants import (
-    example_config_path,
-    example_transactions_path,
-    data_structure_path,
-)
+from utils.constants import paths
 from utils.data_utils import (
     validate_config_format,
     MappingConfigData,
@@ -25,14 +21,14 @@ if "i" not in st.session_state:
 
 
 # Let user upload transactions data
-example_transactions_data = df_to_excel(pd.read_excel(example_transactions_path))
+example_transactions_data = df_to_excel(pd.read_excel(paths["example_transactions"]))
 file_path = display_get_transactions_file(
     title="transactions (.xlsx)", example_file=example_transactions_data
 )
 
 # Let user upload their configuration file
 with open(
-    example_config_path,
+    paths["example_config"],
     "r",
 ) as file:
     example_config_data = file.read()
@@ -126,7 +122,7 @@ else:
         icon="ℹ️",
     )
 
-    data_structure = pd.read_excel(data_structure_path)
+    data_structure = pd.read_excel(paths["data_structure"])
     st.dataframe(data_structure)
 
     st.markdown(
