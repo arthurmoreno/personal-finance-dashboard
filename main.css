@@ -58,3 +58,6 @@
 [data-testid='stFileUploaderFile']{
     display: none
 }
+.row-widget.stRadio > div{
+    flex-direction:row
+}

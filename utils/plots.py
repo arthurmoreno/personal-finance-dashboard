@@ -106,8 +106,8 @@ class PlotUtils:
         operation_select = alt.selection_single(fields=["SUBCATEGORY"], empty="all")
         if self.pieplot_colors:
             scale = alt.Scale(
-                domain=df["SUBCATEGORY"].to_list(),
-                range=self.pieplot_colors,
+                domain=list(self.pieplot_colors.keys()),
+                range=list(self.pieplot_colors.values()),
             )
         else:
             scale = alt.Scale(domain=df["SUBCATEGORY"].to_list())
@@ -154,7 +154,7 @@ class PlotUtils:
         )
 
         # Get the years
-        years = [x for x in list(df.columns) if "December" in x]
+        years = [x for x in list(df.columns) if "January" in x]
 
         # Create a list of lines, one for each year
         scatter_lines = []
