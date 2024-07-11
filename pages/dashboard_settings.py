@@ -8,8 +8,7 @@ from utils.dashboard_utils import (
 )
 import pandas as pd
 from utils.constants import (
-    example_categorized_transactions_path,
-    exaple_dashboard_config_path,
+    paths,
     category_col,
     subcategory_col,
     source_col,
@@ -17,18 +16,17 @@ from utils.constants import (
 
 # Get example transactions data
 example_transactions_data = df_to_excel(
-    pd.read_excel(example_categorized_transactions_path)
+    pd.read_excel(paths["example_categorized_transactions"])
 )
 
 # Get example config
 with open(
-    exaple_dashboard_config_path,
+    paths["exaple_dashboard_config"],
     "r",
 ) as file:
     yaml_data = file.read()
 
 st.title("Financial Dashboard Configuration")
-st.divider()
 
 st.subheader("Transactions Data")
 
@@ -57,7 +55,6 @@ if st.session_state.file is not None:
     currency = st.text_input("Currency symbol", value="€", max_chars=3)
 
     st.header("Chart Settings")
-    st.sidebar.write(st.session_state.config)
     st.subheader("Hidden Categories from Barplot")
     hidden_categories_from_barplot = get_checkbox_options(
         categories, st.session_state.config, "hidden_categories_from_barplot"
@@ -117,8 +114,7 @@ if st.session_state.file is not None:
             "income_category": income_category,
             "goals": goals,
         }
-        st.success("Configuration saved! (Not really, this is just a demonstration)")
-        st.subheader("Entered Configuration:")
+        st.success("Configuration saved!")
         st.session_state.config = config
 
         if st.session_state.user_logged_in:

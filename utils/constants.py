@@ -21,5 +21,5 @@ paths = {
     "exaple_dashboard_config": "example_resources/categorized/dashboard.yml",
     "example_transactions": "example_resources/raw/transactions.xlsx",
     "data_structure": "example_resources/raw/data_structure.xlsx",
-    "example_config": "example_resources/raw/categories_mapping.yml"
+    "example_config": "example_resources/raw/categories_mapping.yml",
 }

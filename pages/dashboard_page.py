@@ -18,7 +18,7 @@ from utils.constants import paths
 import polars as pl
 import pandas as pd
 
-data_structure = pd.read_excel(paths["categorized_data_structure_path"])
+data_structure = pd.read_excel(paths["categorized_data_structure"])
 
 org_data = None
 # if user is logged in, check if they have a file uploaded

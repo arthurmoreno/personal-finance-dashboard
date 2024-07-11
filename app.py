@@ -1,9 +1,8 @@
 import streamlit as st
 
 import yaml
-from utils.constants import (
-    default_dashboard_config_path,
-)
+from utils.constants import paths
+
 from utils.dashboard_utils import (
     display_contact_info,
 )
@@ -32,10 +31,13 @@ def maincss(file_name):
 
 maincss("main.css")
 
+# Needed to reload the AgGrid
+if "AgGrid_i" not in st.session_state:
+    st.session_state.AgGrid_i = 0
 if "user_logged_in" not in st.session_state:
     st.session_state.user_logged_in = False
 if "config" not in st.session_state:
-    with open(default_dashboard_config_path) as stream:
+    with open(paths["default_dashboard_config"]) as stream:
         try:
             st.session_state.config = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
