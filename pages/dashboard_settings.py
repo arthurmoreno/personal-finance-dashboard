@@ -30,25 +30,20 @@ with open(
 st.title("Financial Dashboard Configuration")
 st.divider()
 
-st.subheader("Tramsactions Data")
+st.subheader("Transactions Data")
 
 if st.session_state.user_logged_in:
     pass
     # TODO after firebase integration
 
 if not st.session_state.user_logged_in:
-    col1, _, col2 = st.columns([2, 1, 2])
-    st.write("User is not logged in")
-    with col1:
-        file_path = display_get_transactions_file(
-            title="Upload categorized transactions (.xlsx)",
-            example_file=example_transactions_data,
-        )
-    with col2:
-        submit = st.button("Upload the file.")
-        if submit:
-            df_fetched = pd.read_excel(file_path)
-            st.session_state.file = df_fetched
+    file_path = display_get_transactions_file(
+        title="Upload categorized transactions (.xlsx)",
+        example_file=example_transactions_data,
+    )
+    if file_path:
+        df_fetched = pd.read_excel(file_path)
+        st.session_state.file = df_fetched
 
 st.divider()
 

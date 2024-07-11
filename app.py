@@ -4,6 +4,9 @@ import yaml
 from utils.constants import (
     default_dashboard_config_path,
 )
+from utils.dashboard_utils import (
+    display_contact_info,
+)
 
 st.set_page_config(
     layout="wide",
@@ -42,5 +45,6 @@ if "file" not in st.session_state:
 if "income_category_index" not in st.session_state:
     st.session_state.income_category_index = None
 
+display_contact_info()
 pg = st.navigation([dashboard_page, dashboard_settings, categorize_page])
 pg.run()

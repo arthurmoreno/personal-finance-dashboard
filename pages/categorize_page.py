@@ -40,7 +40,6 @@ with open(
 config_path = display_get_configuration_file(
     title="categorization mapping (.yml)", example_file=example_config_data
 )
-display_contact_info()
 
 if (config_path is not None) & (file_path is not None):
     st.markdown(

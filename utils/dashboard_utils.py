@@ -66,7 +66,6 @@ def display_faq():
 
 def display_contact_info():
     with st.sidebar:
-        st.divider()
         st.markdown(
             """
         Get in touch:
