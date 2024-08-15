@@ -14,14 +14,14 @@ from utils.constants import (
 
 
 class PlotUtils:
-    def __init__(self, config_file=None):
-        self.hidden_categories_from_barplot = config_file[
-            "hidden_categories_from_barplot"
-        ]
-        self.pieplot_colors = config_file["pieplot_colors"]
-        self.lineplot_colors = config_file["lineplot_colors"]
-        self.lineplot_width = config_file["lineplot_width"]
-        self.currency = config_file["currency"]
+    def __init__(self, config_file):
+        self.config_file = config_file
+        if "lineplot_colors" not in self.config_file:
+            self.config_file["lineplot_colors"] = {}
+        if "lineplot_width" not in self.config_file:
+            self.config_file["lineplot_width"] = {}
+        if "hidden_categories_from_barplot" not in self.config_file:
+            self.config_file["hidden_categories_from_barplot"] = []
 
     def plot_net_value_line_plot(self, df: DataFrame, time_frame_col: str):
         """Plots a line plot of net value for all sources over time."""
@@ -33,8 +33,8 @@ class PlotUtils:
             source = trace.name  # Get the name of the source
             trace.update(
                 line=dict(
-                    color=self.lineplot_colors.get(source),
-                    width=self.lineplot_width.get(source),
+                    color=self.config_file["lineplot_colors"].get(source),
+                    width=self.config_file["lineplot_width"].get(source),
                 )
             )
 
@@ -63,7 +63,7 @@ class PlotUtils:
         [
             trace.update(visible="legendonly")
             for trace in fig_go.data
-            if trace.name in self.hidden_categories_from_barplot
+            if trace.name in self.config_file["hidden_categories_from_barplot"]
         ]
 
         st.plotly_chart(fig_go, use_container_width=True)
@@ -87,7 +87,7 @@ class PlotUtils:
             ui.metric_card(
                 title,
                 f"{content:.2f}",
-                f"{description:.2f}" + self.currency,
+                f"{description:.2f}" + self.config_file["currency"],
             )
 
         last_period = df.select(pl.col(time_frame_col).max()).item()
@@ -104,10 +104,10 @@ class PlotUtils:
     def plot_pieplot(self, df: DataFrame):
         df = df.to_pandas()
         operation_select = alt.selection_single(fields=["SUBCATEGORY"], empty="all")
-        if self.pieplot_colors:
+        if self.config_file["pieplot_colors"]:
             scale = alt.Scale(
-                domain=list(self.pieplot_colors.keys()),
-                range=list(self.pieplot_colors.values()),
+                domain=list(self.config_file["pieplot_colors"].keys()),
+                range=list(self.config_file["pieplot_colors"].values()),
             )
         else:
             scale = alt.Scale(domain=df["SUBCATEGORY"].to_list())
