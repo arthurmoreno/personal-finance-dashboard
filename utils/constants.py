@@ -13,7 +13,7 @@ category_col_mapping = {
     "Category": category_col,
     "Subcategory": subcategory_col,
 }
-
+colors = ["#07004D", "#42E2B8", "#F3DFBF", "#2D82B7", "#EB8A90"]
 paths = {
     "default_dashboard_config": "default_dashboard.yml",
     "categorized_data_structure": "example_resources/categorized/data_structure.xlsx",
