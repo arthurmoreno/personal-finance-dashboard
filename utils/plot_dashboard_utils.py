@@ -7,8 +7,7 @@ from utils.calculate_utils import CalculateUtils
 class PlotDashboardUtils:
     def __init__(self, config_file):
         self.PlotUtils = PlotUtils(config_file=config_file)
-        self.income_category = config_file["income_category"]
-        self.goals = config_file["goals"]
+        self.config_file = config_file
 
     def display_net_value(self, df, time_frame_col, all_sources):
         """Displays the net value as a line plot over time and as tiles."""
@@ -37,15 +36,18 @@ class PlotDashboardUtils:
 
     def display_pieplot(self, df):
         data = (
-            df.filter(pl.col("CATEGORY") == self.income_category)
+            df.filter(pl.col("CATEGORY") == self.config_file["income_category"])
             .group_by("SUBCATEGORY")
             .agg(pl.sum("AMOUNT").alias("AMOUNT"))
+            .filter(pl.col("AMOUNT") > 0)
             .sort("SUBCATEGORY")
         )
-        pieplot = self.PlotUtils.plot_pieplot(data)
-        return pieplot
+
+        if data.shape[0] > 0:
+            pieplot = self.PlotUtils.plot_pieplot(data)
+            return pieplot
 
     def display_goals_heatmap(self, df):
-        goals_df = CalculateUtils.calculate_goals(df, self.goals)
+        goals_df = CalculateUtils.calculate_goals(df, self.config_file["goals"])
         heatmap = self.PlotUtils.plot_goals_heatmap(goals_df)
         return heatmap
