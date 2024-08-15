@@ -2,10 +2,7 @@ import streamlit as st
 import pandas as pd
 from io import BytesIO
 import pandas as pd
-from utils.constants import (
-    time_frame_mapping,
-    category_col_mapping,
-)
+from utils.constants import time_frame_mapping, category_col_mapping, colors
 import streamlit_shadcn_ui as ui
 from streamlit_extras.mention import mention
 
@@ -175,6 +172,24 @@ def df_to_excel(df):
 MAX_COLS = 4
 
 
+def get_checkbox_option(option, config, config_name):
+    """
+    Create a grid of checkboxes for given options.
+
+    Args:
+    options (list): Option name.
+
+    Returns:
+    list: A list of selected options.
+    """
+    if (config is not None) & (config_name in config):
+        config_settings = config[config_name]
+    else:
+        config_settings = None
+
+    return st.checkbox(option, value=config_settings)
+
+
 def get_checkbox_options(options, config, config_name):
     """
     Create a grid of checkboxes for given options.
@@ -185,8 +200,10 @@ def get_checkbox_options(options, config, config_name):
     Returns:
     list: A list of selected options.
     """
-    if config is not None:
-        config = config[config_name]
+    if (config is not None) & (config_name in config):
+        config_settings = config[config_name]
+    else:
+        config_settings = None
     n_cols = min(len(options), MAX_COLS)
     selected_options = []
 
@@ -196,7 +213,7 @@ def get_checkbox_options(options, config, config_name):
             with cols[col]:
                 if st.checkbox(
                     option,
-                    value=(option in config) if config else False,
+                    value=(option in config_settings) if config_settings else False,
                 ):
                     selected_options.append(option)
 
@@ -214,8 +231,14 @@ def get_color_picker_options(options, config, config_name):
     Returns:
     dict: A dictionary mapping option names to their selected colors.
     """
-    if config is not None:
-        config = config[config_name]
+    if (config is not None) & (config_name in config):
+        config_settings = config[config_name]
+    else:
+        config_settings = None
+    # st.success(config)
+    # st.success(config_name)
+    # st.success(config_settings)
+    # st.success("a" in config_settings)
     n_cols = min(len(options), MAX_COLS)
     color_options = {}
 
@@ -223,10 +246,16 @@ def get_color_picker_options(options, config, config_name):
         cols = st.columns(n_cols)
         for col, option in enumerate(options[i : i + n_cols]):
             with cols[col]:
+                color_option = colors[col % len(colors)]
                 color = st.color_picker(
                     label=f"Color for {option}",
                     key=option,
-                    value=config[option] if config else "#000000",
+                    value=(
+                        config_settings[option]
+                        if config_settings is not None and option in config_settings
+                        else color_option
+                        # TODO: This might still contain a bug if 2 categories have a subcategory with the same name and you change between these 2 categories
+                    ),
                 )
                 color_options[option] = color
 
@@ -244,8 +273,10 @@ def get_number_input_options(options, value, min_value, max_value, config, confi
     Returns:
     dict: A dictionary mapping option names to their selected colors.
     """
-    if config is not None:
-        config = config[config_name]
+    if (config is not None) & (config_name in config):
+        config_settings = config[config_name]
+    else:
+        config_settings = None
     n_cols = min(len(options), MAX_COLS)
     width_options = {}
 
@@ -255,7 +286,7 @@ def get_number_input_options(options, value, min_value, max_value, config, confi
             with cols[col]:
                 width = st.number_input(
                     option,
-                    value=config[option] if config else value,
+                    value=config_settings[option] if config_settings else value,
                     min_value=min_value,
                     max_value=max_value,
                 )
