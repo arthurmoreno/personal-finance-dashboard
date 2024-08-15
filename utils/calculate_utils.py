@@ -161,9 +161,7 @@ class CalculateUtils:
         comparison = pd.merge(actual_spending, goals_df, on="CATEGORY", how="inner")
 
         # Determine if goals were achieved
-        comparison["GOAL_ACHIEVED"] = (
-            comparison["MAX_AMOUNT"] > comparison["AMOUNT"].abs()
-        )
+        comparison["GOAL_ACHIEVED"] = -comparison["MAX_AMOUNT"] < comparison["AMOUNT"]
 
         # Add a human-readable month column
         comparison["MONTH"] = pd.to_datetime(comparison["YEAR_MONTH"]).dt.strftime(
