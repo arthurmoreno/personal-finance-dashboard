@@ -3,7 +3,6 @@ from utils.constants import paths
 from utils.dashboard_utils import display_contact_info, read_config
 from utils.app_utils import maincss
 import os
-from dotenv import load_dotenv
 from utils.firebasehandler import FirebaseHandler
 import extra_streamlit_components as stx
 
@@ -11,7 +10,6 @@ import extra_streamlit_components as stx
 st.set_page_config(
     layout="wide",
 )
-load_dotenv()
 maincss("main.css")
 display_contact_info()
 st.sidebar.divider()
@@ -40,14 +38,14 @@ manage_account = st.Page(
 )
 
 firebaseConfig = {
-    "apiKey": os.getenv("API_KEY"),
-    "authDomain": os.getenv("AUTH_DOMAIN"),
-    "projectId": os.getenv("PROJECT_ID"),
-    "databaseURL": os.getenv("DATABASE_URL"),
-    "storageBucket": os.getenv("STORAGE_BUCKET"),
-    "messagingSenderId": os.getenv("MESSAGING_SENDER_ID"),
-    "appId": os.getenv("APP_ID"),
-    "measurementId": os.getenv("MEASUREMENT_ID"),
+    "apiKey": st.secrets["API_KEY"],
+    "authDomain": st.secrets["AUTH_DOMAIN"],
+    "projectId": st.secrets["PROJECT_ID"],
+    "databaseURL": st.secrets["DATABASE_URL"],
+    "storageBucket": st.secrets["STORAGE_BUCKET"],
+    "messagingSenderId": st.secrets["MESSAGING_SENDER_ID"],
+    "appId": st.secrets["APP_ID"],
+    "measurementId": st.secrets["MEASUREMENT_ID"],
 }
 
 
