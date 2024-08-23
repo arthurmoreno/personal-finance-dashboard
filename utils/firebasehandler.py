@@ -58,13 +58,8 @@ class FirebaseHandler:
             match = re.search(r'"message":\s*"([^"]+)"', error_msg)
             if match:
                 # Extract the matched group, which is the actual error message
-                specific_error_message = match.group(1)
-                st.error(
-                    f"Error creating account: {specific_error_message}. Try again."
-                )
-            else:
-                # If the specific message wasn't found, log the entire exception
-                st.error(f"Error creating account: {error_msg}. Try again.")
+                error_msg = match.group(1)
+            st.error(f"Error creating account: {error_msg}. Try again.")
             st.stop()
 
     def login_account(self, email, password):
@@ -85,11 +80,8 @@ class FirebaseHandler:
             match = re.search(r'"message":\s*"([^"]+)"', error_msg)
             if match:
                 # Extract the matched group, which is the actual error message
-                specific_error_message = match.group(1)
-                st.error(f"Error logging in {specific_error_message}. Try again.")
-            else:
-                # If the specific message wasn't found, log the entire exception
-                st.error(f"Error logging in {error_msg}. Try again.")
+                error_msg = match.group(1)
+            st.error(f"Error logging in {error_msg}. Try again.")
             st.stop()
 
     def read_file(self, uid, file_group="TransactionsData"):
