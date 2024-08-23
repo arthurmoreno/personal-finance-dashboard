@@ -2,7 +2,6 @@ import streamlit as st
 from utils.constants import paths
 from utils.dashboard_utils import display_contact_info, read_config
 from utils.app_utils import maincss
-import os
 from utils.firebasehandler import FirebaseHandler
 import extra_streamlit_components as stx
 
@@ -78,7 +77,8 @@ if st.session_state.cookie_manager.get(cookie="user_logged_in"):
 
 # DEBUG
 # st.sidebar.write("config:", st.session_state.config)
-# st.sidebar.write("cookies:", cookies)
+# st.sidebar.write("cookies:", st.session_state.cookie_manager.get_all())
+# st.sidebar.write("user:", st.session_state.cookie_manager.get(cookie="user"))
 
 pg = st.navigation(
     [dashboard_page, dashboard_settings, categorize_page, manage_account]
