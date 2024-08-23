@@ -5,6 +5,7 @@ import pandas as pd
 from utils.constants import time_frame_mapping, category_col_mapping, colors
 import streamlit_shadcn_ui as ui
 from streamlit_extras.mention import mention
+import yaml
 
 
 def display_faq():
@@ -65,7 +66,7 @@ def display_contact_info():
     with st.sidebar:
         st.markdown(
             """
-        Get in touch:
+        Get in touch / notify any bugs:
         """
         )
         mention(
@@ -86,12 +87,13 @@ def display_contact_info():
 
 def display_date_picker(first_and_last_date):
     """Displays the date picker and returns the selected dates."""
-    day_start, day_end = ui.date_picker(
+    dates = ui.date_picker(
         key="date_picker",
         mode="range",
         label="Selected Range",
         default_value=first_and_last_date,
     )
+    day_start, day_end = dates
     return day_start, day_end
 
 
@@ -109,7 +111,7 @@ def display_get_transactions_file(title, example_file=None):
 
 
 def display_tabs():
-    """Displays the tabs for the time frame, source and category and return their value."""
+    """Displays the tabs for the time frame and category and return their value."""
 
     def create_tabs(mapping):
         # Key is arbitrary here.
@@ -122,17 +124,17 @@ def display_tabs():
 
         return selected_col
 
-    tabs = st.columns([3, 3, 6])
-    with tabs[0]:
+    time_frame_section, category_section, _ = st.columns([3, 3, 6])
+    with time_frame_section:
         time_frame_col = create_tabs(time_frame_mapping)
-    with tabs[1]:
+    with category_section:
         category_col = create_tabs(category_col_mapping)
     return time_frame_col, category_col
 
 
 def display_sources(all_sources):
     sources = st.multiselect(
-        label="",
+        label="Sources",
         options=all_sources,
         default=all_sources,
     )
@@ -159,8 +161,8 @@ def display_get_configuration_file(title, example_file=None):
     return uploaded_file
 
 
-# Function to convert DataFrame to Excel
 def df_to_excel(df):
+    # Function to convert DataFrame to Excel
     output = BytesIO()
     writer = pd.ExcelWriter(output, engine="xlsxwriter")
     df.to_excel(writer, index=False, sheet_name="Sheet1")
@@ -174,14 +176,15 @@ MAX_COLS = 4
 
 def get_checkbox_option(option, config, config_name):
     """
-    Create a grid of checkboxes for given options.
+    Create 1 checkbox
 
     Args:
     options (list): Option name.
 
     Returns:
-    list: A list of selected options.
+    Boolean: Value of the checkbox
     """
+    # If there is already a value in the config, fetch that
     if (config is not None) & (config_name in config):
         config_settings = config[config_name]
     else:
@@ -198,12 +201,15 @@ def get_checkbox_options(options, config, config_name):
     options (list): List of option names.
 
     Returns:
-    list: A list of selected options.
+    list[bool]: A list of selected options.
     """
+    # If there is already a value in the config, fetch that
     if (config is not None) & (config_name in config):
         config_settings = config[config_name]
     else:
         config_settings = None
+
+    # Define number of columns
     n_cols = min(len(options), MAX_COLS)
     selected_options = []
 
@@ -211,6 +217,7 @@ def get_checkbox_options(options, config, config_name):
         cols = st.columns(n_cols)
         for col, option in enumerate(options[i : i + n_cols]):
             with cols[col]:
+                # Get old default value of checkboxes, if none exist, set to False
                 if st.checkbox(
                     option,
                     value=(option in config_settings) if config_settings else False,
@@ -235,10 +242,6 @@ def get_color_picker_options(options, config, config_name):
         config_settings = config[config_name]
     else:
         config_settings = None
-    # st.success(config)
-    # st.success(config_name)
-    # st.success(config_settings)
-    # st.success("a" in config_settings)
     n_cols = min(len(options), MAX_COLS)
     color_options = {}
 
@@ -254,7 +257,6 @@ def get_color_picker_options(options, config, config_name):
                         config_settings[option]
                         if config_settings is not None and option in config_settings
                         else color_option
-                        # TODO: This might still contain a bug if 2 categories have a subcategory with the same name and you change between these 2 categories
                     ),
                 )
                 color_options[option] = color
@@ -263,33 +265,33 @@ def get_color_picker_options(options, config, config_name):
 
 
 def get_number_input_options(options, value, min_value, max_value, config, config_name):
-    """
-    Create a grid of color pickers for given options.
-
-    Args:
-    options (list): List of option names.
-    label_prefix (str): Prefix for the color picker labels.
-
-    Returns:
-    dict: A dictionary mapping option names to their selected colors.
-    """
-    if (config is not None) & (config_name in config):
-        config_settings = config[config_name]
-    else:
-        config_settings = None
+    # Same as get_checkbox_options but for number inputs
+    config_settings = config.get(config_name) if config else None
     n_cols = min(len(options), MAX_COLS)
-    width_options = {}
+    selected_options = {}
 
     for i in range(0, len(options), n_cols):
         cols = st.columns(n_cols)
-        for col, option in enumerate(options[i : i + n_cols]):
-            with cols[col]:
-                width = st.number_input(
+        for col_index, option in enumerate(options[i : i + n_cols]):
+            with cols[col_index]:
+                input_val = st.number_input(
                     option,
-                    value=config_settings[option] if config_settings else value,
+                    value=(
+                        config_settings.get(option, value) if config_settings else value
+                    ),
                     min_value=min_value,
                     max_value=max_value,
                 )
-                width_options[option] = width
+                selected_options[option] = input_val
 
-    return width_options
+    return selected_options
+
+
+def read_config(path):
+    # Read config an return its value
+    with open(path) as stream:
+        try:
+            config = yaml.safe_load(stream)
+            return config
+        except yaml.YAMLError as exc:
+            st.error(exc)

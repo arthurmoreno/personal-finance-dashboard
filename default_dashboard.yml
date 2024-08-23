@@ -2,6 +2,7 @@ display_data: True
 currency: €
 hidden_categories_from_barplot: []
 pieplot_colors: []
+random_lineplot_colors: True
 lineplot_colors: {}
 lineplot_width: {}
 income_category: INCOME

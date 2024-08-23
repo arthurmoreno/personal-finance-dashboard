@@ -16,10 +16,10 @@ from utils.data_utils import (
 
 # Let user upload their configuration file
 with open(
-    paths["example_config"],
+    paths["example_categories_mapping_config"],
     "r",
 ) as file:
-    example_config_data = file.read()
+    example_categories_mapping_config_data = file.read()
 
 # Let user upload transactions data
 example_transactions_data = df_to_excel(pd.read_excel(paths["example_transactions"]))
@@ -30,7 +30,8 @@ with cols[0]:
     )
 with cols[1]:
     config_path = display_get_configuration_file(
-        title="Upload categorization mapping (.yml)", example_file=example_config_data
+        title="Upload categorization mapping (.yml)",
+        example_file=example_categories_mapping_config_data,
     )
 
 
@@ -134,4 +135,4 @@ else:
         icon="ℹ️",
     )
 
-    st.code(example_config_data, language="yml")
+    st.code(example_categories_mapping_config_data, language="yml")

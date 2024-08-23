@@ -18,8 +18,7 @@ paths = {
     "default_dashboard_config": "default_dashboard.yml",
     "categorized_data_structure": "example_resources/categorized/data_structure.xlsx",
     "example_categorized_transactions": "example_resources/categorized/transactions.xlsx",
-    "exaple_dashboard_config": "example_resources/categorized/dashboard.yml",
     "example_transactions": "example_resources/raw/transactions.xlsx",
     "data_structure": "example_resources/raw/data_structure.xlsx",
-    "example_config": "example_resources/raw/categories_mapping.yml",
+    "example_categories_mapping_config": "example_resources/raw/categories_mapping.yml",
 }

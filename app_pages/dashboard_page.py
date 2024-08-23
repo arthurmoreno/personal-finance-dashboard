@@ -18,22 +18,28 @@ from utils.constants import paths
 import polars as pl
 import pandas as pd
 
-data_structure = pd.read_excel(paths["categorized_data_structure"])
+_data = None
+if st.session_state.cookie_manager.get(cookie="user_logged_in"):
+    # If the user is logged in we check if they have a file uploaded
+    uid = st.session_state.cookie_manager.get(cookie="user")["localId"]
+    if st.session_state.firebase.db.child(uid).child("TransactionsData").get().val():
+        st.session_state.cookie_manager.set("file_exists", True, "file_exists")
 
-org_data = None
-# if user is logged in, check if they have a file uploaded
-if (st.session_state.file is not None) and (st.session_state.user_logged_in):
-    pass
-    # TODO after integrating firebase
-if (st.session_state.file is not None) and (not st.session_state.user_logged_in):
-    org_data = st.session_state.file
+if st.session_state.cookie_manager.get(cookie="file_exists"):
+    # If there is a file (logged in or not), we fetch the latest data
+    if st.session_state.cookie_manager.get(cookie="user_logged_in"):
+        _data = st.session_state.firebase.read_file(uid, "TransactionsData")
+    else:
+        _data = st.session_state.df_fetched
 
-plot_dashboard_utils = PlotDashboardUtils(st.session_state.config)
+if _data is not None:
+    # Instansiate the class that will used to generate the plots based some configuration
+    plot_dashboard_utils = PlotDashboardUtils(st.session_state.config)
 
-if org_data is not None:
-    org_data = pl.from_pandas(org_data)
-    validate_data(org_data)
-    data = add_columns(org_data)
+    # Preprocess the data (_data => data)
+    _data = pl.from_pandas(_data)
+    validate_data(_data)
+    data = add_columns(_data)
 
     first_and_last_date = get_first_last_date(data)
 
@@ -45,7 +51,7 @@ if org_data is not None:
 
     # Display the data in tabular form
     if st.session_state.config["display_data"]:
-        display_data(org_data)
+        display_data(_data)  # display the data the user uploaded
 
     # Get all possible sources within the tiemfeame
     all_sources = get_all_sources(data)
@@ -70,16 +76,18 @@ if org_data is not None:
         )
 
     # Only plot the heatmap of the goals if goals are provided.
-    if st.session_state.config["goals"] != {}:
+    goals = st.session_state.config.get("goals")
+    if goals:
         heatmap = plot_dashboard_utils.display_goals_heatmap(data)
-        heatmap  # TODO: why is income goal of 100 never achieved?
+        heatmap
 
     # Plot pieplot of the income -- only if the income category is known.
     if st.session_state.income_category_index is not None:
-        _, col_center, _ = st.columns(3)
         pieplot = plot_dashboard_utils.display_pieplot(data)
-        with col_center:
-            pieplot
+        if pieplot:
+            _, col_center, _ = st.columns(3)
+            with col_center:
+                pieplot
 else:
     st.markdown(
         """
@@ -103,7 +111,7 @@ else:
         "The transactions should be structured like this:",
         icon="ℹ️",
     )
-    st.dataframe(data_structure)
+    st.dataframe(pd.read_excel(paths["categorized_data_structure"]))
     st.markdown(
         """
         <div class="section-header">FAQ</div>
