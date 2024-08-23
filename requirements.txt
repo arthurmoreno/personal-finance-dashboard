@@ -11,3 +11,4 @@ pandera
 openpyxl
 streamlit_aggrid
 fastexcel
+pyrebase4
