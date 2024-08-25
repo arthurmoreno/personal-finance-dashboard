@@ -108,6 +108,6 @@ class TransactionProcessor:
 
     def map_and_validate_categories(self, org_data):
         categorized_data = self.map_categories(org_data)
-        self.validate_data(categorized_data)
+        self.validate_data(categorized_data.to_pandas())
         categorized_data = self.remove_columns(categorized_data)
         return categorized_data

@@ -5,6 +5,7 @@ import pandera as pa
 import pandas as pd
 from typing import List, Dict
 from pydantic import BaseModel, ValidationError, StrictBool
+import datetime as dt
 
 
 def get_all_sources(df):
@@ -29,11 +30,6 @@ def filter_data(data, start_date, end_date):
 
 def add_columns(df):
     data = df.with_columns(
-        [
-            pl.col("DATE").str.strptime(pl.Date, "%Y-%m-%d").alias("DATE"),
-        ]
-    )
-    data = data.with_columns(
         pl.col("DATE").dt.strftime("%Y-%m").alias("YEAR_MONTH"),
         pl.col("DATE").dt.strftime("%YW%V").alias("YEAR_WEEK"),
         pl.when(pl.col("AMOUNT") > 0)

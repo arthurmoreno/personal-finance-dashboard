@@ -8,7 +8,6 @@ from utils.dashboard_utils import (
     display_faq,
 )
 from utils.data_utils import (
-    validate_data,
     add_columns,
     filter_data,
     get_first_last_date,
@@ -38,7 +37,6 @@ if _data is not None:
 
     # Preprocess the data (_data => data)
     _data = pl.from_pandas(_data)
-    validate_data(_data)
     data = add_columns(_data)
 
     first_and_last_date = get_first_last_date(data)
