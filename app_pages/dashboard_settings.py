@@ -15,6 +15,7 @@ from utils.constants import (
     source_col,
 )
 import time
+from utils.data_utils import validate_data
 
 st.title("Financial Dashboard Configuration")
 st.subheader("Transactions Data")
@@ -100,6 +101,7 @@ st.divider()
 # If there is actually an uploaded file, then show the configuration settings that
 # the user can adjust.
 if st.session_state.df_fetched is not None:
+    validate_data(st.session_state.df_fetched)
     categories = sorted(st.session_state.df_fetched[category_col].unique())
     subcategories = sorted(st.session_state.df_fetched[subcategory_col].unique())
     sources = sorted(st.session_state.df_fetched[source_col].unique()) + ["Total"]

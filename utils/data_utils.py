@@ -46,8 +46,6 @@ def add_columns(df):
 
 
 def validate_data(df):
-    df = df.to_pandas()
-
     if "DATE" not in df.columns:
         st.error(
             f"Column 'DATE' not in dataframe. Columns in dataframe: {list(df.columns)}"
