@@ -1,5 +1,5 @@
 SUBCATEGORIES: # Under here, you list all the subcategories
-  TELECOM: # All transactions containing "BASE" 
+  TELECOM: # All transactions containing "BASE"
     - BASE # will be categorized as TELECOM
   TRANSFERS:
     - BE19 0000 0000 0000
@@ -27,7 +27,7 @@ SUBCATEGORIES: # Under here, you list all the subcategories
   INTREST:
     - INTREST
   STARTING_BALANCE:
-    - STARTING_BALANCE 
+    - STARTING_BALANCE
 # You can add as many subcategories as you want.
 
 # Here you list all the categories and its associated

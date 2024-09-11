@@ -1,15 +1,13 @@
-import streamlit as st
-from utils.constants import paths
-from utils.dashboard_utils import display_contact_info, read_config
-from utils.app_utils import maincss
-from utils.firebasehandler import FirebaseHandler
 import extra_streamlit_components as stx
+import streamlit as st
 
+from firebase import FirebaseHandler
+from utils import display_contact_info, load_maincss, paths, read_config
 
 st.set_page_config(
     layout="wide",
 )
-maincss("main.css")
+load_maincss(paths["maincss"])
 display_contact_info()
 st.sidebar.divider()
 
@@ -34,6 +32,12 @@ manage_account = st.Page(
     "app_pages/manage_account.py",
     title="Manage account",
     icon=":material/person:",
+)
+
+privacy_policy = st.Page(
+    "app_pages/privacy_policy.py",
+    title="Privacy policy",
+    icon=":material/lock:",
 )
 
 firebaseConfig = {
@@ -64,6 +68,8 @@ if "df_fetched" not in st.session_state:
     st.session_state.df_fetched = None
 if "reload_key" not in st.session_state:
     st.session_state.reload_key = 0
+if "debug_mode" not in st.session_state:
+    st.session_state.debug_mode = False
 if st.session_state.cookie_manager.get(cookie="user_logged_in"):
     handle = (
         st.session_state.firebase.db.child(
@@ -76,11 +82,17 @@ if st.session_state.cookie_manager.get(cookie="user_logged_in"):
     st.sidebar.write(f"Hi {handle} 👋")
 
 # DEBUG
-# st.sidebar.write("config:", st.session_state.config)
-# st.sidebar.write("cookies:", st.session_state.cookie_manager.get_all())
-# st.sidebar.write("user:", st.session_state.cookie_manager.get(cookie="user"))
+if st.session_state.debug_mode:
+    st.sidebar.write("cookies:", st.session_state.cookie_manager.get_all())
+    st.sidebar.write("user:", st.session_state)
 
 pg = st.navigation(
-    [dashboard_page, dashboard_settings, categorize_page, manage_account]
+    [
+        dashboard_page,
+        dashboard_settings,
+        categorize_page,
+        manage_account,
+        privacy_policy,
+    ]
 )
 pg.run()

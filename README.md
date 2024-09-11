@@ -12,40 +12,26 @@ The Categorizer allows users to categorize their financial transactions by uploa
 ### Dashboard
 The Dashboard lets users upload transaction data from Excel files. It displays balance trends over time for different sources such as bank accounts and credit cards using graphs and tiles. It also provides insights into spending per category using bar graphs. Additionally, users can set financial goals, like limiting travel expenses, and track their progress with a heatmap.
 
-
 The application's behavior and settings can be customized the dasboard settings.
+
+## Logging in
+Logging in provides the benefit of saving the user's data in the database. Therefore you won't have to upload your data every time you open the application.
 
 ## Folder Structure
 ```
 personal-finance-dashboard/
+├── .streamlit/                         # Hidden.
+│   ├── secrets.toml                    # Contains the API keys for the firebase connection
 ├── app_pages/                          # Directory for all the pages
-│   ├── categorize_page.py
-│   ├── dashboard_page.py
-│   ├── dashboard_settings.py
-│   └── manage_account.py
 ├── example_resources/                  # Directory for storing data files for demo
 │   ├── categorized/                    # Data for the dashboard
-│   │   ├── data_structure.xlsx
-│   │   └── transactions.xlsx
 │   └── raw/                            # Data for the categorizer
-│       ├── categories_mapping.yml
-│       ├── data_structure.xlsx
-│       └── transactions.xlsx
+├── firebase/                           # All modules to handle the firebase connection
+├── static/                             # Static files
 ├── utils/                              # Utility functions for all plots and calculations
-│   ├── app_utils.py
-│   ├── calculate_utils.py
-│   ├── constants.py                    
-│   ├── dashboard_utils.py
-│   ├── data_utils.py
-│   ├── firebasehandler.py
-│   ├── parse_data.py
-│   ├── plot_dashboard_utils.py
-│   └── plots.py                        
-├── app.py                              # Main Streamlit application file
-├── default_dashboard.yml               # Default settings of the dashboard
-├── main.css                            # CSS
-├── requirements.txt                    # Python dependencies
 ├── .gitignore
+├── .pre-commit-config.yaml
+├── app.py                              # Main Streamlit application file
 ├── README.md
 ├── requirements.txt
 ```
@@ -61,7 +47,19 @@ $ git clone https://github.com/NarekAra/personal-finance-dashboard.git
 $ pip install -r requirements.txt
 ```
 
-3. Run the Streamlit application:
+3. Fill in the secrets.toml file with your Firebase API keys and other secrets. If you do not want to be able to log in and store data, you can leave the secrets.toml file empty like this.
+```
+API_KEY = " ",
+AUTH_DOMAIN = " ",
+PROJECT_ID = " "
+DATABASE_URL = " ",
+STORAGE_BUCKET = " ",
+MESSAGING_SENDER_ID = " ",
+APP_ID = " ",
+MEASUREMENT_ID = " ",
+```
+
+4. Run the Streamlit application:
 ```
 $ streamlit run app.py
 ```
@@ -82,11 +80,13 @@ Contributions to this project are welcome, especially the ones mentioned in the 
 - [ ] Allow users to keep track of their debt
 - [ ] Look forward: projected income/outcome in the future
 - [ ] Allow users to chat with their transactions
+- [ ] Make the firebase optional to use this repo
 - ...
 
 ## Changelog
-- 01/06/2024: First version. Added the dashboard
-- 02/06/2024: Added the transaction categorizer
-- 05/06/2024: Added support for financial goals
+- 01/07/2024: First version. Added the dashboard
+- 02/07/2024: Added the transaction categorizer
+- 05/07/2024: Added support for financial goals
 - 15/08/2024: Allow changing the config in the UI
 - 23/08/2024: Allow users to log in
+- 11/09/2024: Many bugfixes

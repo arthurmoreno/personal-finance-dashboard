@@ -1,21 +1,19 @@
+import pandas as pd
+import polars as pl
 import streamlit as st
-from utils.plot_dashboard_utils import PlotDashboardUtils
-from utils.dashboard_utils import (
-    display_data,
-    display_sources,
-    display_tabs,
+
+from utils import (
+    PlotUtils,
+    add_columns,
     display_date_picker,
     display_faq,
-)
-from utils.data_utils import (
-    add_columns,
+    display_sources,
+    display_tabs,
     filter_data,
-    get_first_last_date,
     get_all_sources,
+    get_first_last_date,
+    paths,
 )
-from utils.constants import paths
-import polars as pl
-import pandas as pd
 
 _data = None
 if st.session_state.cookie_manager.get(cookie="user_logged_in"):
@@ -33,7 +31,7 @@ if st.session_state.cookie_manager.get(cookie="file_exists"):
 
 if _data is not None:
     # Instansiate the class that will used to generate the plots based some configuration
-    plot_dashboard_utils = PlotDashboardUtils(st.session_state.config)
+    plot_dashboard_utils = PlotUtils(st.session_state.config)
 
     # Preprocess the data (_data => data)
     _data = pl.from_pandas(_data)
@@ -49,7 +47,8 @@ if _data is not None:
 
     # Display the data in tabular form
     if st.session_state.config["display_data"]:
-        display_data(_data)  # display the data the user uploaded
+        with st.expander("Data Preview"):
+            st.dataframe(_data)  # display the data the user uploaded
 
     # Get all possible sources within the tiemfeame
     all_sources = get_all_sources(data)
@@ -91,12 +90,27 @@ else:
         """
         <div class="main-header">Personal Finance Dashboard</div>
         <div class="sub-header">Take Control of Your Finances</div>
-        <div class="intro-text">Welcome to a Streamlit-based personal finance dashboard. This intuitive dashboard is designed to give you a visual representation of your finances over time, empowering you to make informed decisions and achieve your financial goals.</div>
+        <div class="intro-text">Welcome to a Streamlit-based personal finance dashboard.
+            This intuitive dashboard is designed to give you a visual representation of your finances over time,
+            empowering you to make informed decisions and achieve your financial goals.</div>
         <div class="section-header">What can you see here?</div>
         <ul class="feature-list">
-            <li><strong>Track your income and expenses</strong> 📊: See exactly where your money comes from and goes. Easy-to-read visualizations break down your income streams and spending habits, helping you identify areas for potential savings or growth. Gain a comprehensive understanding of your financial patterns to make informed decisions about budgeting and resource allocation.</li>
-            <li><strong>Monitor your cash flow</strong> 💸: Stay on top of your incoming and outgoing funds. This dashboard provides clear insight into your current financial liquidity, allowing you to plan for upcoming expenses and avoid potential shortfalls. Anticipate cash crunches and optimize your spending timing to maintain a healthy financial balance.</li>
-            <li><strong>View your financial progress</strong> 📈: Charts and graphs track your progress towards your financial goals over time. Whether you're saving for a dream vacation or planning for retirement, this dashboard keeps you motivated and on track. Visualize your long-term financial journey and adjust your strategies based on real-time performance data.</li>
+            <li><strong>Track your income and expenses</strong>
+            📊: See exactly where your money comes from and goes.
+            Easy-to-read visualizations break down your income streams and spending habits,
+            helping you identify areas for potential savings or growth. Gain a comprehensive
+            understanding of your financial patterns to make informed decisions about budgeting
+            and resource allocation.</li>
+            <li><strong>Monitor your cash flow</strong>
+            💸: Stay on top of your incoming and outgoing funds.
+            This dashboard provides clear insight into your current financial liquidity,
+            allowing you to plan for upcoming expenses and avoid potential shortfalls.
+            Anticipate cash crunches and optimize your spending timing to maintain a healthy financial balance.</li>
+            <li><strong>View your financial progress</strong>
+            📈: Charts and graphs track your progress towards your financial goals over time.
+            Whether you're saving for a dream vacation or planning for retirement, this dashboard keeps you motivated
+            and on track. Visualize your long-term financial journey and adjust your strategies based on real-time
+            performance data.</li>
         </ul>
         <div class="section-header">Transactions data</div>
         """,

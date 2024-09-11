@@ -41,4 +41,4 @@ else:
                 on_click=firebase.forgot_password,
                 args=([email]),
             )
-        st.info(f"You are currently logged out.")
+        st.info("You are currently logged out.")

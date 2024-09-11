@@ -1,17 +1,16 @@
+import pandas as pd
 import streamlit as st
 import yaml
-import pandas as pd
-from utils.parse_data import TransactionProcessor
-from st_aggrid import JsCode, GridOptionsBuilder, AgGrid
-from utils.dashboard_utils import (
-    display_get_transactions_file,
-    display_get_configuration_file,
-    df_to_excel,
-)
-from utils.constants import paths
-from utils.data_utils import (
-    validate_config_format,
+from st_aggrid import AgGrid, GridOptionsBuilder, JsCode
+
+from utils import (
     MappingConfigData,
+    TransactionProcessor,
+    df_to_excel,
+    display_get_configuration_file,
+    display_get_transactions_file,
+    paths,
+    validate_config_format,
 )
 
 # Let user upload their configuration file
@@ -21,39 +20,61 @@ with open(
 ) as file:
     example_categories_mapping_config_data = file.read()
 
+if "config_to_categorize" not in st.session_state:
+    st.session_state.config_to_categorize = None
+if "data_to_categorize" not in st.session_state:
+    st.session_state.data_to_categorize = None
+
 # Let user upload transactions data
 example_transactions_data = df_to_excel(pd.read_excel(paths["example_transactions"]))
 cols = st.columns(2)
+# config = None
+# org_data = None
 with cols[0]:
     file_path = display_get_transactions_file(
         title="Upload transactions (.xlsx)", example_file=example_transactions_data
     )
+    if st.button("Upload the file."):
+        if file_path:
+            st.session_state.data_to_categorize = pd.read_excel(file_path)
+        else:
+            st.error("Please upload a transactions file.")
 with cols[1]:
     config_path = display_get_configuration_file(
         title="Upload categorization mapping (.yml)",
         example_file=example_categories_mapping_config_data,
     )
+    if st.button("Upload the config"):
+        if config_path:
+            st.session_state.config_to_categorize = yaml.safe_load(config_path)
+        else:
+            st.error("Please upload a configuration file.")
 
-
-if (config_path is not None) & (file_path is not None):
+if (st.session_state.config_to_categorize is not None) & (
+    st.session_state.data_to_categorize is not None
+):
     st.markdown(
         """
         <ul class="feature-list">
             <li>Categories and subcategories have been assgined to all your transactions. </li>
             <li>You can now overwrite any categories and subcategories that got assigned incorrectly. </li>
-            <li>Some transactions, highlighted in <strong><span style="color: red; font-styl:bold">red</span></strong>, have not been assigned to any category. </li>
-            <li>Consider expanding the configuration file to include these transactions, or manually edit them yourself. </li>
-            <li>It is recommended to only change the subcategory and press <em>'Fill in Category'</em> to update the category based on the configuration file. </li>
+            <li>Some transactions, highlighted in <strong>
+                <span style="color: red; font-styl:bold">red</span></strong>,
+                ave not been assigned to any category. </li>
+            <li>Consider expanding the configuration file to include these transactions,
+            or manually edit them yourself. </li>
+            <li>It is recommended to only change the subcategory and press
+                <em>'Fill in Category'</em> to update the category based on the configuration file. </li>
         </ul>""",
         unsafe_allow_html=True,
     )
-    config = yaml.safe_load(config_path)
-    validate_config_format(config, MappingConfigData)
-    org_data = pd.read_excel(file_path)
-    processor = TransactionProcessor(config)
+    validate_config_format(st.session_state.config_to_categorize, MappingConfigData)
+    processor = TransactionProcessor(st.session_state.config_to_categorize)
 
     if "updated_df" not in st.session_state or st.session_state.updated_df is None:
-        categorized_data = processor.map_and_validate_categories(org_data)
+        categorized_data = processor.map_and_validate_categories(
+            st.session_state.data_to_categorize
+        )
     else:
         categorized_data = st.session_state.updated_df
 
@@ -65,7 +86,7 @@ if (config_path is not None) & (file_path is not None):
             col_name,
             cellEditor="agSelectCellEditor",
             cellEditorParams={
-                "values": sorted(set(config[c].keys())),
+                "values": sorted(set(st.session_state.config_to_categorize[c].keys())),
             },
         )
     grid_options = grid_builder.build()
@@ -116,7 +137,9 @@ else:
         '☝️ Upload an excel (.xlsx) file or click *"Download example"* to get started!'
     )
     st.info(
-        "In order to categorize your transactions, only a description is sufficient. However, if you would like to use the dashboard later on, it is recommend to have an excel file structured like this:",
+        """In order to categorize your transactions, only a description is sufficient.
+        However, if you would like to use the dashboard later on, it is recommend to have
+        an excel file structured like this:""",
         icon="ℹ️",
     )
 
@@ -131,7 +154,9 @@ else:
         '☝️ Upload a configuration file (.yml) or click *"Download example"* to get started!'
     )
     st.info(
-        "This file will contain the rules for categorizing your transactions. Every transaction should only have 1 subcategory. Every subcategory should have exactly 1 category.",
+        """This file will contain the rules for categorizing your transactions.
+        Every transaction should only have 1 subcategory.
+        Every subcategory should have exactly 1 category.""",
         icon="ℹ️",
     )
 
