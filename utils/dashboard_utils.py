@@ -540,6 +540,25 @@ def display_contact_info() -> None:
         )
 
 
+def display_data(data: pl.DataFrame) -> None:
+    """Display data in a dataframe."""
+    if st.session_state.config["display_data"]:
+        with st.expander("Data Preview"):
+            name = st.text_input("Filter the data")
+            if name:
+                filtered_data = data.filter(
+                    pl.any_horizontal(
+                        pl.col("*")
+                        .cast(pl.Utf8)
+                        .str.to_lowercase()
+                        .str.contains(name.lower())
+                    )
+                )
+            else:
+                filtered_data = data
+            st.dataframe(filtered_data)
+
+
 def display_date_picker(
     first_and_last_date: Tuple[dt.date, dt.date]
 ) -> Tuple[dt.date, dt.date]:

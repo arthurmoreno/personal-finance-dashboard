@@ -85,7 +85,8 @@ def handle_file_upload(user_id, user_logged_in):
                 df_fetched = pd.read_excel(file_path)
                 df_fetched["DATE"] = df_fetched["DATE"].astype(str)
                 if "TAG" in df_fetched.columns:  # TODO dont hardcod
-                    df_fetched["TAG"] = df_fetched["TAG"].fillna("")
+                    df_fetched["TAG"] = df_fetched["TAG"]
+                df_fetched = df_fetched.fillna("")
                 # we should probably not validate twice
                 validate_data(df_fetched)
                 st.session_state.cookie_manager.set("file_exists", True, "file_exists")

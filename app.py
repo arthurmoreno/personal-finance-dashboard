@@ -41,14 +41,24 @@ privacy_policy = st.Page(
 )
 
 firebaseConfig = {
-    "apiKey": st.secrets["API_KEY"],
-    "authDomain": st.secrets["AUTH_DOMAIN"],
-    "projectId": st.secrets["PROJECT_ID"],
-    "databaseURL": st.secrets["DATABASE_URL"],
-    "storageBucket": st.secrets["STORAGE_BUCKET"],
-    "messagingSenderId": st.secrets["MESSAGING_SENDER_ID"],
-    "appId": st.secrets["APP_ID"],
-    "measurementId": st.secrets["MEASUREMENT_ID"],
+    "apiKey": st.secrets["config"]["apiKey"],
+    "authDomain": st.secrets["config"]["authDomain"],
+    "databaseURL": st.secrets["config"]["databaseURL"],
+    "storageBucket": st.secrets["config"]["storageBucket"],
+    "serviceAccount": {
+        "type": st.secrets["serviceAccount"]["type"],
+        "project_id": st.secrets["serviceAccount"]["project_id"],
+        "private_key_id": st.secrets["serviceAccount"]["private_key_id"],
+        "private_key": st.secrets["serviceAccount"]["private_key"],
+        "client_email": st.secrets["serviceAccount"]["client_email"],
+        "client_id": st.secrets["serviceAccount"]["client_id"],
+        "auth_uri": st.secrets["serviceAccount"]["auth_uri"],
+        "token_uri": st.secrets["serviceAccount"]["token_uri"],
+        "auth_provider_x509_cert_url": st.secrets["serviceAccount"][
+            "auth_provider_x509_cert_url"
+        ],
+        "client_x509_cert_url": st.secrets["serviceAccount"]["client_x509_cert_url"],
+    },
 }
 
 

@@ -5,6 +5,7 @@ import streamlit as st
 from utils import (
     PlotUtils,
     add_columns,
+    display_data,
     display_date_picker,
     display_faq,
     display_sources,
@@ -40,15 +41,20 @@ if _data is not None:
     first_and_last_date = get_first_last_date(data)
 
     # Give user option to change date range
-    start_date, end_date = display_date_picker(first_and_last_date)
+    selected_dates = display_date_picker(first_and_last_date)
+    if selected_dates:
+        if len(selected_dates) == 2:
+            start_date, end_date = selected_dates
+        else:
+            st.stop()
+    else:
+        st.stop()
 
     # Filter data on date range
     data = filter_data(data, start_date, end_date)
 
     # Display the data in tabular form
-    if st.session_state.config["display_data"]:
-        with st.expander("Data Preview"):
-            st.dataframe(_data)  # display the data the user uploaded
+    display_data(_data)
 
     # Get all possible sources within the tiemfeame
     all_sources = get_all_sources(data)

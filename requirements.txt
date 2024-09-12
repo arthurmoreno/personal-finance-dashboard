@@ -1,7 +1,6 @@
 pyyaml
 polars
 streamlit-shadcn-ui
-streamlit_js_eval
 streamlit-javascript
 plotly
 xlsx2csv

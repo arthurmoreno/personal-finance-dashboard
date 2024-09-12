@@ -21,6 +21,7 @@ from .dashboard_utils import (
     CalculateUtils,
     PlotUtils,
     display_contact_info,
+    display_data,
     display_date_picker,
     display_faq,
     display_get_configuration_file,
@@ -78,4 +79,5 @@ __all__ = [
     "paths",
     "TransactionProcessor",
     "load_maincss",
+    "display_data",
 ]
