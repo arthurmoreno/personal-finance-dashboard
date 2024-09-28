@@ -20,7 +20,10 @@ _data = None
 if st.session_state.cookie_manager.get(cookie="user_logged_in"):
     # If the user is logged in we check if they have a file uploaded
     uid = st.session_state.cookie_manager.get(cookie="user")["localId"]
-    if st.session_state.firebase.db.child(uid).child("TransactionsData").get().val():
+    if (
+        st.session_state.firebase.db.child(uid).child("TransactionsData").get().val()
+        is not None
+    ):
         st.session_state.cookie_manager.set("file_exists", True, "file_exists")
 
 if st.session_state.cookie_manager.get(cookie="file_exists"):
@@ -32,7 +35,7 @@ if st.session_state.cookie_manager.get(cookie="file_exists"):
 
 if _data is not None:
     # Instansiate the class that will used to generate the plots based some configuration
-    plot_dashboard_utils = PlotUtils(st.session_state.config)
+    plot_dashboard_utils = PlotUtils(st.session_state.dashboardconfig)
 
     # Preprocess the data (_data => data)
     _data = pl.from_pandas(_data)
@@ -79,7 +82,7 @@ if _data is not None:
         )
 
     # Only plot the heatmap of the goals if goals are provided.
-    goals = st.session_state.config.get("goals")
+    goals = st.session_state.dashboardconfig.get("goals")
     if goals:
         heatmap = plot_dashboard_utils.display_goals_heatmap(data)
         heatmap
@@ -87,7 +90,7 @@ if _data is not None:
     # Plot pieplot of the income -- only if the income category is known.
     if st.session_state.income_category_index is not None:
         pieplot = plot_dashboard_utils.display_pieplot(data)
-        if pieplot:
+        if pieplot is not None:
             _, col_center, _ = st.columns(3)
             with col_center:
                 pieplot
@@ -118,20 +121,6 @@ else:
             and on track. Visualize your long-term financial journey and adjust your strategies based on real-time
             performance data.</li>
         </ul>
-        <div class="section-header">Transactions data</div>
-        """,
-        unsafe_allow_html=True,
-    )
-    st.warning(
-        "👈 Upload an excel (.xlsx) file in the dashboard settings to get started! An example file is provided."
-    )
-    st.info(
-        "The transactions should be structured like this:",
-        icon="ℹ️",
-    )
-    st.dataframe(pd.read_excel(paths["categorized_data_structure"]))
-    st.markdown(
-        """
         <div class="section-header">FAQ</div>
         """,
         unsafe_allow_html=True,

@@ -1,9 +1,9 @@
 from .app_utils import load_maincss
 from .config_utils import (
-    DashboardConfigData,
-    MappingConfigData,
     read_config,
-    validate_config_format,
+    save_config,
+    validate_categorize_mapping_config_format,
+    validate_dashboard_config_format,
 )
 from .constants import (
     amount_col,
@@ -21,6 +21,7 @@ from .dashboard_utils import (
     CalculateUtils,
     PlotUtils,
     display_contact_info,
+    display_current_categorization_config_structure,
     display_data,
     display_date_picker,
     display_faq,
@@ -49,9 +50,8 @@ __all__ = [
     "filter_data",
     "add_columns",
     "validate_data",
-    "DashboardConfigData",
-    "MappingConfigData",
-    "validate_config_format",
+    "validate_dashboard_config_format",
+    "validate_categorize_mapping_config_format",
     "display_faq",
     "display_contact_info",
     "display_date_picker",
@@ -80,4 +80,6 @@ __all__ = [
     "TransactionProcessor",
     "load_maincss",
     "display_data",
+    "display_current_categorization_config_structure",
+    "save_config",
 ]

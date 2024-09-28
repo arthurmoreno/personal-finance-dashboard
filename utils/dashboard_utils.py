@@ -542,7 +542,7 @@ def display_contact_info() -> None:
 
 def display_data(data: pl.DataFrame) -> None:
     """Display data in a dataframe."""
-    if st.session_state.config["display_data"]:
+    if st.session_state.dashboardconfig["display_data"]:
         with st.expander("Data Preview"):
             name = st.text_input("Filter the data")
             if name:
@@ -741,3 +741,153 @@ def get_number_input_options(
                 selected_options[option] = input_val
 
     return selected_options
+
+
+def _add_category(category):
+    if category and category not in st.session_state.config_to_categorize["CATEGORIES"]:
+        st.session_state.config_to_categorize["CATEGORIES"][category] = []
+        st.rerun()
+    elif category in st.session_state.config_to_categorize["CATEGORIES"]:
+        st.warning(
+            f"Category '{category}' already exists. Please use a different name."
+        )
+        st.stop()
+    else:
+        st.warning("Please enter a category name.")
+        st.stop()
+
+
+def _add_subcategory(category, subcategory):
+    if (
+        category
+        and subcategory
+        and subcategory not in st.session_state.config_to_categorize["SUBCATEGORIES"]
+    ):
+        st.session_state.config_to_categorize["CATEGORIES"][category].append(
+            subcategory
+        )
+        st.session_state.config_to_categorize["SUBCATEGORIES"][subcategory] = []
+        st.session_state._subcategory_to_category[subcategory] = category
+        st.rerun()
+    elif not subcategory:
+        st.warning("Please enter a subcategory")
+        st.stop()
+    else:
+        st.warning(
+            f"Subcategory '{subcategory}' already exists. Please use a different name.",
+        )
+        st.stop()
+
+
+def _add_rule(rule, subcategory):
+    if rule:
+        if (
+            rule
+            not in st.session_state.config_to_categorize["SUBCATEGORIES"][subcategory]
+        ):
+            st.session_state.config_to_categorize["SUBCATEGORIES"][subcategory].append(
+                rule
+            )
+            st.rerun()
+        else:
+            st.warning(
+                f"Rule '{rule}' already exists in subcategory '{subcategory}'. Please enter a different rule.",
+            )
+            st.stop()
+    else:
+        st.warning("Please enter a rule.")
+        st.stop()
+
+
+def _delete_category(category):
+    st.sidebar.success(st.session_state._subcategory_to_category)
+    subcategories = st.session_state.config_to_categorize["CATEGORIES"][category]
+    for subcategory in subcategories:
+        del st.session_state.config_to_categorize["SUBCATEGORIES"][subcategory]
+        del st.session_state._subcategory_to_category[subcategory]
+    del st.session_state.config_to_categorize["CATEGORIES"][category]
+    st.rerun()
+
+
+def _delete_subcategory(subcategory):
+    category = st.session_state._subcategory_to_category[subcategory]
+    st.sidebar.success(st.session_state._subcategory_to_category)
+    st.session_state.config_to_categorize["CATEGORIES"][category].remove(subcategory)
+    del st.session_state.config_to_categorize["SUBCATEGORIES"][subcategory]
+    del st.session_state._subcategory_to_category[subcategory]
+    st.rerun()
+
+
+def _delete_rule(subcategory, rule):
+    st.session_state.config_to_categorize["SUBCATEGORIES"][subcategory].remove(rule)
+    st.rerun()
+
+
+def _get_rules(subcategory):
+    return st.session_state.config_to_categorize["SUBCATEGORIES"].get(subcategory, [])
+
+
+def _get_subcategories(category):
+    return st.session_state.config_to_categorize["CATEGORIES"][category]
+
+
+def display_current_categorization_config_structure():
+    # Add new category
+    col1, col2 = st.columns([5, 1])
+    new_category = col1.text_input(
+        "New category name",
+        key="new_category_input",
+        label_visibility="collapsed",
+        placeholder="Enter category name",
+    )
+    if col2.button("➕ Category", key="add_category_button"):
+        _add_category(new_category)
+    for category in st.session_state.config_to_categorize["CATEGORIES"]:
+        col1, col2 = st.columns([5, 1])
+        with col1.expander(category):
+            if col2.button("🗑️", key=f"del_cat_{category}"):
+                _delete_category(category)
+
+            for subcategory in _get_subcategories(category):
+                col1, col2 = st.columns([6, 1])
+                col1.markdown(
+                    f'<div class="flex-container subcategory"><span class="label">{subcategory}</span></div>',
+                    unsafe_allow_html=True,
+                )
+                if col2.button("🗑️", key=f"del_subcat_{category}-{subcategory}"):
+                    _delete_subcategory(subcategory)
+
+                rules = _get_rules(subcategory)
+                if rules:
+                    for rule in rules:
+                        _, rule_col1, rule_col2 = st.columns([1, 5, 1])
+                        rule_col1.markdown(
+                            f'<div class="flex-container rule"><span class="label">{rule}</span></div>',
+                            unsafe_allow_html=True,
+                        )
+                        if rule_col2.button(
+                            "🗑️", key=f"del_rule_{category}-{subcategory}_{rule}"
+                        ):
+                            _delete_rule(subcategory, rule)
+                else:
+                    st.markdown("*No rules in this subcategory*")
+                _, rule_col1, rule_col2 = st.columns([1, 5, 1])
+                new_rule = rule_col1.text_input(
+                    "New rule",
+                    key=f"new_rule_{subcategory}",
+                    label_visibility="collapsed",
+                    placeholder="New rule",
+                )
+                if rule_col2.button(
+                    "➕ Rule", key=f"add_rule_{category}-{subcategory}"
+                ):
+                    _add_rule(new_rule, subcategory)
+            col1, col2 = st.columns([6, 1])
+            new_subcategory = col1.text_input(
+                "New subcategory",
+                key=f"new_subcat_{category}",
+                label_visibility="collapsed",
+                placeholder="New subcategory",
+            )
+            if col2.button("➕ Subcategory", key=f"add_subcat_{category}"):
+                _add_subcategory(category, new_subcategory)

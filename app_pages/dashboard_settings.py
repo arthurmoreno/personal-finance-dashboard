@@ -12,8 +12,10 @@ from utils import (
     get_number_input_options,
     paths,
     read_config,
+    save_config,
     source_col,
     subcategory_col,
+    validate_dashboard_config_format,
     validate_data,
 )
 
@@ -23,10 +25,10 @@ def display_header():
     st.subheader("Transactions Data")
 
 
-def _reset_config(user_id):
-    st.session_state.config = read_config(paths["default_dashboard_config"])
+def _reset_dashboardconfig(user_id):
+    st.session_state.dashboardconfig = read_config(paths["default_dashboard_config"])
     if st.session_state.cookie_manager.get(cookie="user_logged_in"):
-        st.session_state.firebase.db.child(user_id).child("Config").remove()
+        st.session_state.firebase.db.child(user_id).child("DashboardConfig").remove()
 
 
 def _reload():
@@ -53,7 +55,7 @@ def handle_existing_data(user_id):
                 st.session_state.firebase.db.child(user_id).child(
                     "TransactionsData"
                 ).remove()
-                _reset_config(user_id)
+                _reset_dashboardconfig(user_id)
                 st_javascript("""window.location.reload()""")
         with col2:
             st.markdown("You can delete your data at any time and start over.")
@@ -78,6 +80,11 @@ def handle_file_upload(user_id, user_logged_in):
         file_path = display_get_transactions_file(
             f"{next_step} your transactions (.xlsx).", example_categorized_transactions
         )
+    st.info(
+        "The transactions should be structured like this:",
+        icon="ℹ️",
+    )
+    st.dataframe(pd.read_excel(paths["categorized_data_structure"]))
 
     with col2:
         if st.button(f"{next_step} the file."):
@@ -103,7 +110,7 @@ def handle_file_upload(user_id, user_logged_in):
             return None
 
 
-def display_reset_config_button(user_id):
+def display_reset_dashboardconfig_button(user_id):
     # Allow the user to reset the value of t he config to the default one.
     # Sometimes the configs can also give errors, this will solve these errors.
     # These errors can happen if the user changes the config, but does not
@@ -111,7 +118,7 @@ def display_reset_config_button(user_id):
     col1, col2 = st.columns([1, 4])
     with col1:
         if st.button("Reset config"):
-            _reset_config(user_id)
+            _reset_dashboardconfig(user_id)
 
             with col2:
                 st.success("Config reset.")
@@ -130,26 +137,30 @@ def handle_income_category_selection(categories, config):
     # as derived by the income_category_index
     if "income_category" in config:
         if config["income_category"] not in categories:
-            income_category_index = 0
+            st.session_state.income_category_index = 0
         else:
-            income_category_index = categories.index(config["income_category"])
+            st.session_state.income_category_index = categories.index(
+                config["income_category"]
+            )
     else:
-        income_category_index = 0
+        st.session_state.income_category_index = 0
 
     return st.selectbox(
-        "Income category", options=categories, index=income_category_index
+        "Income category",
+        options=categories,
+        index=st.session_state.income_category_index,
     )
 
 
 def display_config_options(user_id):
     df = st.session_state.df_fetched
-    config = st.session_state.config
+    config = st.session_state.dashboardconfig
 
     categories = sorted(df[category_col].unique())
     sources = sorted(df[source_col].unique()) + ["Total"]
 
     st.header("General Settings")
-    display_reset_config_button(user_id)
+    display_reset_dashboardconfig_button(user_id)
 
     config["display_data"] = st.checkbox("Display transactions", value=True)
     config["currency"] = st.text_input(
@@ -199,19 +210,13 @@ def display_config_options(user_id):
         config_name="goals",
     )
     config["goals"] = {k: v for k, v in config["goals"].items() if v is not None}
+
+    validate_dashboard_config_format(config)
     return config
 
 
 def get_income_sources(df, income_category):
     return sorted(df[df[category_col] == income_category][subcategory_col].unique())
-
-
-def save_configuration(config, user_id):
-    if st.button("Save Configuration"):
-        if st.session_state.cookie_manager.get(cookie="user_logged_in"):
-            st.session_state.firebase.upload_file(config, user_id, "Config")
-        st.success("Configuration saved!")
-        st.rerun()
 
 
 display_header()
@@ -230,16 +235,19 @@ else:
 uploaded_df = handle_file_upload(user_id, user_logged_in)
 if uploaded_df is not None:
     st.session_state.df_fetched = uploaded_df
-st.divider()
 if st.session_state.df_fetched is not None:
     validate_data(st.session_state.df_fetched)
     if user_logged_in:
-        st.session_state.config = st.session_state.firebase.read_file(user_id, "Config")
-        if st.session_state.config is None:
-            st.session_state.config = read_config(paths["default_dashboard_config"])
+        st.session_state.dashboardconfig = st.session_state.firebase.read_file(
+            user_id, "DashboardConfig"
+        )
+        if st.session_state.dashboardconfig is None:
+            st.session_state.dashboardconfig = read_config(
+                paths["default_dashboard_config"]
+            )
     else:
-        st.session_state.config = read_config(paths["default_dashboard_config"])
+        st.session_state.dashboardconfig = read_config(
+            paths["default_dashboard_config"]
+        )
     updated_config = display_config_options(user_id)
-    save_configuration(updated_config, user_id)
-else:
-    st.error("No data found. Please upload a file.")
+    save_config(updated_config, user_id, "DashboardConfig")

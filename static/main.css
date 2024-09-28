@@ -61,3 +61,28 @@
 .row-widget.stRadio > div{
     flex-direction:row
 }
+.flex-container { 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    border-radius: 5px; 
+    margin-bottom: 5px;
+}
+.category { 
+    background-color: #2d3748;
+}
+.subcategory { 
+    background-color: #1a202c; 
+}
+.rule {
+    background-color: #2d3748;
+}
+.label {
+    font-size: 0.9em;
+    color: #a0aec0;
+}
+.stButton > button {
+    padding: 0.1rem 0.5rem;
+    font-size: 0.8em;
+}
