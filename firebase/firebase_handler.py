@@ -26,14 +26,15 @@ class FirebaseHandler:
         )
         # st.session_state.reload_key = st.session_state.reload_key + 1
 
-    def upload_file(self, uploaded_file, uid, child):
+    def upload_file(self, uploaded_file, uid, child, rerun=True):
         """Upload a file to Firebase Storage"""
         try:
             self.db.child(uid).child(child).push(uploaded_file)
         except Exception as e:
             st.error(f"Error uploading file {e}")
             st.stop()
-        st.rerun()
+        if rerun:
+            st.rerun()
 
     def create_account(self, email, password, handle):
         """Create a new account"""
@@ -58,7 +59,9 @@ class FirebaseHandler:
             user = self.auth.sign_in_with_email_and_password(email, password)
             st.success("You have logged in successfully")
             time.sleep(1)
-            st.session_state.config = read_config(paths["default_dashboard_config"])
+            st.session_state.dashboardconfig = read_config(
+                paths["default_dashboard_config"]
+            )
             st.session_state.cookie_manager.set("user", user, "user")
             st.session_state.cookie_manager.set(
                 "user_logged_in", True, "user_logged_in"
@@ -85,7 +88,11 @@ class FirebaseHandler:
             data_fetched = None
             if file_group == "TransactionsData":
                 data_fetched = pd.DataFrame(selected_file)
-            elif file_group == "Config":
+            elif file_group in [
+                "DashboardConfig",
+                "CategorizationConfig",
+                "_subcategory_to_category",
+            ]:
                 data_fetched = selected_file
             else:
                 raise ValueError("Invalid file group")
@@ -95,10 +102,13 @@ class FirebaseHandler:
 
     def logout_account(self):
         """Log out of an existing account"""
-        st.session_state.config = read_config(paths["default_dashboard_config"])
+        st.session_state.dashboardconfig = read_config(
+            paths["default_dashboard_config"]
+        )
         st.session_state.cookie_manager.set("user_logged_in", False, "user_logged_in_")
         st.session_state.cookie_manager.set("user", None, "user_")
         st.session_state.cookie_manager.set("file_exists", False, "file_exists_")
+        st.session_state.first_run_while_logged_in = 0
         st.success("You have logged out of your account.")
         self._reload()
 

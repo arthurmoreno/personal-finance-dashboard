@@ -80,13 +80,15 @@ Contributions to this project are welcome, especially the ones mentioned in the 
 - [ ] Allow users to keep track of their debt
 - [ ] Look forward: projected income/outcome in the future
 - [ ] Allow users to chat with their transactions
-- [ ] Make the firebase optional to use this repo
+- [x] Make the firebase optional to use this repo
 - ...
 
 ## Changelog
 - 01/07/2024: First version. Added the dashboard
 - 02/07/2024: Added the transaction categorizer
 - 05/07/2024: Added support for financial goals
-- 15/08/2024: Allow changing the config in the UI
+- 15/08/2024: Allow changing the dashboardconfig in the UI
 - 23/08/2024: Allow users to log in
 - 11/09/2024: Many bugfixes
+- 11/09/2024: Added the ability to query data & bugfix firebase
+- 28/09/2024: Allow changing the categorization config in the UI

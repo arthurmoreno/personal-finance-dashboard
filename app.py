@@ -64,8 +64,8 @@ firebaseConfig = {
 
 if "AgGrid_i" not in st.session_state:  # Needed to reload the AgGrid
     st.session_state.AgGrid_i = 0
-if "config" not in st.session_state:  # Set config to the default config
-    st.session_state.config = read_config(paths["default_dashboard_config"])
+if "dashboardconfig" not in st.session_state:  # Set config to the default config
+    st.session_state.dashboardconfig = read_config(paths["default_dashboard_config"])
 if "income_category_index" not in st.session_state:  # needed for the pieplot
     st.session_state.income_category_index = None
 if "firebase" not in st.session_state:
@@ -80,21 +80,52 @@ if "reload_key" not in st.session_state:
     st.session_state.reload_key = 0
 if "debug_mode" not in st.session_state:
     st.session_state.debug_mode = False
+if "data_to_categorize" not in st.session_state:
+    st.session_state.data_to_categorize = None
+if "_subcategory_to_category" not in st.session_state:
+    st.session_state._subcategory_to_category = {}
+if "config_to_categorize" not in st.session_state:
+    st.session_state.config_to_categorize = {
+        "CATEGORIES": {},
+        "SUBCATEGORIES": {},
+    }
+if "first_run_while_logged_in" not in st.session_state:
+    st.session_state.first_run_while_logged_in = 0
+
 if st.session_state.cookie_manager.get(cookie="user_logged_in"):
-    handle = (
-        st.session_state.firebase.db.child(
-            st.session_state.cookie_manager.get(cookie="user")["localId"]
-        )
-        .child("Handle")
-        .get()
-        .val()
+    st.session_state.first_run_while_logged_in = (
+        st.session_state.first_run_while_logged_in + 1
     )
+    user_id = st.session_state.cookie_manager.get(cookie="user")["localId"]
+    handle = st.session_state.firebase.db.child(user_id).child("Handle").get().val()
     st.sidebar.write(f"Hi {handle} 👋")
 
-# DEBUG
+if st.session_state.first_run_while_logged_in == 1:
+    fetched_CategorizationConfig = st.session_state.firebase.read_file(
+        user_id, "CategorizationConfig"
+    )
+    if fetched_CategorizationConfig is not None:
+        st.session_state.config_to_categorize = fetched_CategorizationConfig
+
+    fetched__subcategory_to_category = st.session_state.firebase.read_file(
+        user_id, "_subcategory_to_category"
+    )
+    if fetched__subcategory_to_category is not None:
+        st.session_state._subcategory_to_category = fetched__subcategory_to_category
+
 if st.session_state.debug_mode:
     st.sidebar.write("cookies:", st.session_state.cookie_manager.get_all())
     st.sidebar.write("user:", st.session_state)
+    st.sidebar.write(st.session_state.first_run_while_logged_in)
+    st.sidebar.write(st.session_state._subcategory_to_category)
+    st.sidebar.write(st.session_state.config_to_categorize)
+    st.sidebar.write(st.session_state.dashboardconfig)
+    testing_page = st.Page(
+        "app_pages/testing.py",
+        title="Testing",
+        icon=":material/lock:",
+    )
+
 
 pg = st.navigation(
     [
