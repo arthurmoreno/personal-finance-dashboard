@@ -49,7 +49,7 @@ if "df_fetched" not in st.session_state:
 if "reload_key" not in st.session_state:
     st.session_state.reload_key = 0
 if "debug_mode" not in st.session_state:
-    st.session_state.debug_mode = True
+    st.session_state.debug_mode = False
 if "data_to_categorize" not in st.session_state:
     st.session_state.data_to_categorize = None
 if "_subcategory_to_category" not in st.session_state:
