@@ -35,6 +35,8 @@ personal-finance-dashboard/
 
 ## Getting Started
 
+Use it hosted on streamlit cloud https://personalfinancedashboard.streamlit.app/ or run it locally:
+
 1. Clone the repository:
 ```
 $ git clone https://github.com/NarekAra/personal-finance-dashboard.git
