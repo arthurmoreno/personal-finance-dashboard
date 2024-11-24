@@ -1,36 +1,39 @@
+"""
+Let user create their 'rules', which maps words in the description column to the users predefined subcategories.
+The subcategories are then mapped to the users predefined categories.
+Users can either create this mapping in the UI or by passing a configuration file (.yml).
+Afterwards, users get an overview of the categorized transactions, which they can download as input for the dashboard.
+Users can also overwrite the categorizations manually.
+"""
+
+import io
+
 import pandas as pd
 import streamlit as st
-import yaml
+from ruamel.yaml import YAML
 from st_aggrid import AgGrid, GridOptionsBuilder, JsCode
 
 from utils import (
-    TransactionProcessor,
+    categorize_data,
     df_to_excel,
     display_current_categorization_config_structure,
     display_get_configuration_file,
     display_get_transactions_file,
     paths,
     validate_categorize_mapping_config_format,
+    validate_data_after_categorization,
 )
-
-# Let user upload their configuration file
-with open(
-    paths["example_categories_mapping_config"],
-    "r",
-) as file:
-    example_categories_mapping_config_data = file.read()
 
 st.markdown(
     """
     <div class="main-header">Categorize Transactions</div>
     <div class="sub-header">Take Control of Your Finances</div>
-    
     <p>To categorize your transactions:</p>
     <ul>
-        <li>Use the 'Current Structure' tab to map rules to your desired categories and subcategories. A rule will search for a given word in the 'DESCRIPTION' column of your transactions.</li>
-        <li>If you are logged in, save your current structure for a future session.</li>
-        <li>If you are logged out, copy the configuration (.yml file). In a future session, simply upload this 
-            file in the 'Upload Config' tab.</li>
+        <li>Use the 'Current Structure' tab to map rules to your desired categories and subcategories.
+        A rule will search for a given word in the 'DESCRIPTION' column of your transactions.</li>
+        <li>For your convenience, save the configuration (.yml file).
+        In a future session, simply upload this file in the 'Upload Config' tab.</li>
         <li>Upload the transactions that you want to categorize in the 'Upload Transactions' tab.</li>
         <li>Download or modify your categorized transactions in the 'Categorize Transactions' tab.</li>
     </ul>
@@ -38,41 +41,32 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+yaml = YAML()
 
-current_structure, upload_config, upload_transactions, categorize_transactions = (
-    st.tabs(
-        [
-            "Current Structure",
-            "Upload Config",
-            "Upload Transactions",
-            "Categorize Transactions",
-        ]
-    )
+
+(
+    current_structure,
+    upload_config,
+    upload_transactions,
+    categorize_transactions,
+) = st.tabs(
+    [
+        "Current Structure",
+        "Upload Config",
+        "Upload Transactions",
+        "Categorize Transactions",
+    ]
 )
 
 with current_structure:
     display_current_categorization_config_structure()
     col1, col2 = st.columns([5, 1])
     with col1.expander("Get current config (.yml):"):
-        yaml_str = yaml.dump(st.session_state.config_to_categorize, sort_keys=False)
+        # for a cleaner overview & let the user copy-paste this to create their own .yml
+        stream = io.StringIO()
+        yaml.dump(st.session_state.config_to_categorize, stream)
+        yaml_str = stream.getvalue()
         st.code(yaml_str, language="yaml")
-    user_logged_in = st.session_state.cookie_manager.get(cookie="user_logged_in")
-    if user_logged_in:
-        user_id = st.session_state.cookie_manager.get(cookie="user")["localId"]
-        if col2.button("Save"):
-            st.session_state.firebase.upload_file(
-                st.session_state.config_to_categorize,
-                user_id,
-                "CategorizationConfig",
-                rerun=False,
-            )
-            st.session_state.firebase.upload_file(
-                st.session_state._subcategory_to_category,
-                user_id,
-                "_subcategory_to_category",
-                rerun=False,
-            )
-            st.rerun()
 
 
 with upload_config:
@@ -83,7 +77,7 @@ with upload_config:
         icon="ℹ️",
     )
 
-    # Let user upload their configuration file
+    # Let user upload their configuration file and pass an example file they can download
     with open(
         paths["example_categories_mapping_config"],
         "r",
@@ -96,13 +90,7 @@ with upload_config:
     )
     if st.button("Upload the config"):
         if config_path:
-            st.session_state.config_to_categorize = yaml.safe_load(config_path)
-            # st.session_state.dashboardconfig["CATEGORIES"] = (
-            #     st.session_state.dashboardconfig["CATEGORIES"]
-            # )
-            # st.session_state.dashboardconfig["SUBCATEGORIES"] = (
-            #     st.session_state.dashboardconfig["SUBCATEGORIES"]
-            # )
+            st.session_state.config_to_categorize = yaml.load(config_path)
             for (
                 category,
                 subcategories,
@@ -112,6 +100,8 @@ with upload_config:
             st.rerun()
         else:
             st.error("Please upload a configuration file.")
+
+
 with upload_transactions:
     st.info(
         """In order to categorize your transactions, only a description is sufficient.
@@ -144,40 +134,45 @@ with categorize_transactions:
             """
             <ul class="feature-list">
                 <li>Categories and subcategories have been assgined to all your transactions. </li>
-                <li>You can now overwrite any categories and subcategories that got assigned incorrectly. </li>
+                <li>You can now overwrite any subcategories that got assigned incorrectly. Press
+                    <em>'Fill in Category'</em> to update the category based on the configuration file. </li>
                 <li>Some transactions, highlighted in <strong>
                     <span style="color: red; font-styl:bold">red</span></strong>,
                     ave not been assigned to any category. </li>
                 <li>Consider expanding the configuration file to include these transactions,
                 or manually edit them yourself. </li>
-                <li>It is recommended to only change the subcategory and press
-                    <em>'Fill in Category'</em> to update the category based on the configuration file. </li>
             </ul>""",
             unsafe_allow_html=True,
         )
-        processor = TransactionProcessor(st.session_state.config_to_categorize)
 
-        if "updated_df" not in st.session_state or st.session_state.updated_df is None:
-            categorized_data = processor.map_and_validate_categories(
-                st.session_state.data_to_categorize
+        if st.session_state.updated_categorized_df is None:
+            categorized_data = categorize_data(
+                st.session_state.data_to_categorize,
+                st.session_state.config_to_categorize,
+            )
+            validate_data_after_categorization(categorized_data)
+            categorized_data = categorized_data.drop(
+                ["SUBCATEGORY_COUNT", "CATEGORY_COUNT"], axis=1
             )
         else:
-            categorized_data = st.session_state.updated_df
+            categorized_data = st.session_state.updated_categorized_df
 
         grid_builder = GridOptionsBuilder.from_dataframe(categorized_data)
+        # Make all elements in df editable
         grid_builder.configure_default_column(editable=True, flex=1)
-        for c in ["CATEGORIES", "SUBCATEGORIES"]:
-            col_name = {"CATEGORIES": "CATEGORY", "SUBCATEGORIES": "SUBCATEGORY"}[c]
-            grid_builder.configure_column(
-                col_name,
-                cellEditor="agSelectCellEditor",
-                cellEditorParams={
-                    "values": sorted(
-                        set(st.session_state.config_to_categorize[c].keys())
-                    ),
-                },
-            )
+        # Make the subcategory column a dropdown. Not needed for category, as it should
+        # be completely dependant on subcategory.
+        grid_builder.configure_column(
+            "SUBCATEGORY",
+            cellEditor="agSelectCellEditor",
+            cellEditorParams={
+                "values": sorted(
+                    set(st.session_state.config_to_categorize["SUBCATEGORIES"].keys())
+                ),
+            },
+        )
         grid_options = grid_builder.build()
+        # Highlight in red if category is UNKNOWN
         grid_options["defaultColDef"]["cellStyle"] = JsCode(
             r"""
             function(cellClassParams) {
@@ -188,21 +183,27 @@ with categorize_transactions:
                 }
         """
         )
-        res = AgGrid(
+        categorized_data = AgGrid(
             data=categorized_data,
             gridOptions=grid_options,
             allow_unsafe_jscode=True,
-            key=f"grid_{st.session_state.AgGrid_i}",
-        )
+            key=f"grid_{st.session_state.AgGrid_number}",
+        )["data"]
 
         if st.button("Fill in category"):
-            st.session_state.AgGrid_i += 1
-            categorized_data = res["data"]
-            categorized_data = processor.map_categories(categorized_data, False)
-            st.session_state.updated_df = categorized_data
+            # key has to be renewed for every update
+            st.session_state.AgGrid_number += 1
+            # categorize again.
+            categorized_data = categorize_data(
+                categorized_data,
+                st.session_state.config_to_categorize,
+                first_time=False,
+            )
+            st.session_state.updated_categorized_df = categorized_data
             st.dataframe(categorized_data)
             st.rerun()
 
+        # Let user download the categorized data
         categorized_data_excel = df_to_excel(categorized_data)
         # Create a download button
         st.download_button(

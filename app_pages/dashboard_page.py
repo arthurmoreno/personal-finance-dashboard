@@ -1,4 +1,6 @@
-import pandas as pd
+"""The front page of the dashboard. After users have submited their categorized data,
+all the visualisations will come here."""
+
 import polars as pl
 import streamlit as st
 
@@ -11,27 +13,15 @@ from utils import (
     display_sources,
     display_tabs,
     filter_data,
-    get_all_sources,
     get_first_last_date,
-    paths,
+    source_col,
 )
 
 _data = None
-if st.session_state.cookie_manager.get(cookie="user_logged_in"):
-    # If the user is logged in we check if they have a file uploaded
-    uid = st.session_state.cookie_manager.get(cookie="user")["localId"]
-    if (
-        st.session_state.firebase.db.child(uid).child("TransactionsData").get().val()
-        is not None
-    ):
-        st.session_state.cookie_manager.set("file_exists", True, "file_exists")
 
 if st.session_state.cookie_manager.get(cookie="file_exists"):
     # If there is a file (logged in or not), we fetch the latest data
-    if st.session_state.cookie_manager.get(cookie="user_logged_in"):
-        _data = st.session_state.firebase.read_file(uid, "TransactionsData")
-    else:
-        _data = st.session_state.df_fetched
+    _data = st.session_state.df_fetched
 
 if _data is not None:
     # Instansiate the class that will used to generate the plots based some configuration
@@ -44,23 +34,16 @@ if _data is not None:
     first_and_last_date = get_first_last_date(data)
 
     # Give user option to change date range
-    selected_dates = display_date_picker(first_and_last_date)
-    if selected_dates:
-        if len(selected_dates) == 2:
-            start_date, end_date = selected_dates
-        else:
-            st.stop()
-    else:
-        st.stop()
+    start_date, end_date = display_date_picker(first_and_last_date)
 
     # Filter data on date range
     data = filter_data(data, start_date, end_date)
 
-    # Display the data in tabular form
+    # Display the data in tabular form.
     display_data(_data)
 
     # Get all possible sources within the tiemfeame
-    all_sources = get_all_sources(data)
+    all_sources = sorted(data.select(source_col).unique().to_series().to_list())
 
     # Give user option to select a source, timeframe granularity, and category granularity.
     time_frame_col, category_col = display_tabs()

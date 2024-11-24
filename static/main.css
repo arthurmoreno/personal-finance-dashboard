@@ -61,19 +61,19 @@
 .row-widget.stRadio > div{
     flex-direction:row
 }
-.flex-container { 
+.flex-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 8px;
-    border-radius: 5px; 
+    border-radius: 5px;
     margin-bottom: 5px;
 }
-.category { 
+.category {
     background-color: #2d3748;
 }
-.subcategory { 
-    background-color: #1a202c; 
+.subcategory {
+    background-color: #1a202c;
 }
 .rule {
     background-color: #2d3748;

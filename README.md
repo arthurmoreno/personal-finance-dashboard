@@ -20,13 +20,10 @@ Logging in provides the benefit of saving the user's data in the database. There
 ## Folder Structure
 ```
 personal-finance-dashboard/
-├── .streamlit/                         # Hidden.
-│   ├── secrets.toml                    # Contains the API keys for the firebase connection
 ├── app_pages/                          # Directory for all the pages
 ├── example_resources/                  # Directory for storing data files for demo
 │   ├── categorized/                    # Data for the dashboard
 │   └── raw/                            # Data for the categorizer
-├── firebase/                           # All modules to handle the firebase connection
 ├── static/                             # Static files
 ├── utils/                              # Utility functions for all plots and calculations
 ├── .gitignore
@@ -46,20 +43,7 @@ $ git clone https://github.com/NarekAra/personal-finance-dashboard.git
 ```
 $ pip install -r requirements.txt
 ```
-
-3. Fill in the secrets.toml file with your Firebase API keys and other secrets. If you do not want to be able to log in and store data, you can leave the secrets.toml file empty like this.
-```
-API_KEY = " ",
-AUTH_DOMAIN = " ",
-PROJECT_ID = " "
-DATABASE_URL = " ",
-STORAGE_BUCKET = " ",
-MESSAGING_SENDER_ID = " ",
-APP_ID = " ",
-MEASUREMENT_ID = " ",
-```
-
-4. Run the Streamlit application:
+3. Run the Streamlit application:
 ```
 $ streamlit run app.py
 ```
@@ -81,6 +65,7 @@ Contributions to this project are welcome, especially the ones mentioned in the 
 - [ ] Look forward: projected income/outcome in the future
 - [ ] Allow users to chat with their transactions
 - [x] Make the firebase optional to use this repo
+- [x] Delete firebebase
 - ...
 
 ## Changelog

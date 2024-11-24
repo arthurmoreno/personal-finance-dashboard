@@ -1,8 +1,10 @@
 from typing import Dict, List
 
 import streamlit as st
-import yaml
 from pydantic import BaseModel, StrictBool, ValidationError
+from ruamel.yaml import YAML
+
+yaml = YAML()
 
 
 class DashboardConfigData(BaseModel):
@@ -53,7 +55,8 @@ def validate_categorize_mapping_config_format(
                 if empty_subcategories is not None:
                     if empty_subcategories != []:
                         st.error(
-                            f"Subcateogries {empty_subcategories} do not have any rules. Add rules to them or delete the subcategory."
+                            f"Subcateogries {empty_subcategories} do not have any rules."
+                            "Add rules to them or delete the subcategory."
                         )
                         st.stop()
             if key == "CATEGORIES":
@@ -61,7 +64,8 @@ def validate_categorize_mapping_config_format(
                 if empty_categories is not None:
                     if empty_categories != []:
                         st.error(
-                            f"Categories {empty_categories} do not have any subcategories. Add subcategoires to them or delete the category."
+                            f"Categories {empty_categories} do not have any subcategories."
+                            "Add subcategoires to them or delete the category."
                         )
                         st.stop()
 
@@ -75,15 +79,7 @@ def read_config(path: str) -> Dict:
     """Read and parse a YAML configuration file."""
     with open(path) as stream:
         try:
-            config = yaml.safe_load(stream)
-            return config
+            config = yaml.load(stream)
         except yaml.YAMLError as exc:
             st.error(exc)
-
-
-def save_config(config, user_id, name):
-    if st.button("Save Configuration"):
-        if st.session_state.cookie_manager.get(cookie="user_logged_in"):
-            st.session_state.firebase.upload_file(config, user_id, name)
-        st.success("Configuration saved!")
-        st.rerun()
+    return config

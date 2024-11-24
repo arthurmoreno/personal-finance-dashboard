@@ -11,14 +11,7 @@ import streamlit_shadcn_ui as ui
 from polars.dataframe import DataFrame
 from streamlit_extras.mention import mention
 
-from utils import (
-    amount_col,
-    category_col_mapping,
-    colors,
-    source_col,
-    time_frame_mapping,
-    type_col,
-)
+from utils import amount_col, category_col_mapping, colors, source_col, time_frame_mapping, type_col
 
 
 class CalculateUtils:
@@ -129,7 +122,7 @@ class CalculateUtils:
 
     @staticmethod
     def calculate_goals(
-        df: pl.DataFrame, goal_spending: List[Dict[str, int]]
+        df: pl.DataFrame, goal_spending: Dict[str, int]
     ) -> pd.DataFrame:
         """Calculate and compare actual spending against predefined goals."""
         # Normalize goal spending data
@@ -280,8 +273,9 @@ class PlotUtils:
             with cols[i % n_cols]:
                 ui.metric_card(
                     source,
-                    f"{net_value_source:.2f}",
-                    f"{ToT_net_value_source:.2f}" + self.config_file["currency"],
+                    f"{net_value_source: .2f}",  # noqa
+                    f"{ToT_net_value_source:.2f}"  # noqa
+                    + self.config_file["currency"],
                 )
 
     def plot_pieplot(self, df: DataFrame) -> alt.Chart:
@@ -569,13 +563,11 @@ def display_date_picker(
         label="Selected Range",
         default_value=first_and_last_date,
     )
-    if dates is not None:  # trying to solve a strange error
-        day_start, day_end = dates
-        return day_start, day_end
+    return dates
 
 
 def display_get_transactions_file(
-    title: str, example_file: Optional[bytes] = None
+    title: str, example_file: Optional[str] = None
 ) -> DataFrame:
     """Display a file uploader for transaction data and
     an optional example file download button."""
@@ -623,7 +615,7 @@ def display_sources(all_sources: List[str]) -> List[str]:
 
 
 def display_get_configuration_file(
-    title: str, example_file: Optional[bytes] = None
+    title: str, example_file: Optional[str] = None
 ) -> Dict[Any, Any]:
     """Display a file uploader for configuration file and an optional example
     file download button."""
@@ -878,9 +870,7 @@ def display_current_categorization_config_structure():
                     label_visibility="collapsed",
                     placeholder="New rule",
                 )
-                if rule_col2.button(
-                    "➕ Rule", key=f"add_rule_{category}-{subcategory}"
-                ):
+                if rule_col2.button("➕ Rule", key=f"add_rule_{category}-{subcategory}"):
                     _add_rule(new_rule, subcategory)
             col1, col2 = st.columns([6, 1])
             new_subcategory = col1.text_input(

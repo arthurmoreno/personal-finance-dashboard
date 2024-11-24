@@ -7,135 +7,106 @@ import pandera as pa
 import polars as pl
 import streamlit as st
 
-from utils import date_col, source_col
+from utils import date_col
 
 
-class TransactionProcessor:
-    def __init__(self, config: Dict):
-        """Initialize the TransactionProcessor."""
-        self.config = config
-
-    def map_categories(
-        self, data: pd.DataFrame, first_time: bool = True
-    ) -> pd.DataFrame:
-        """Maps transaction descriptions to predefined categories and
-        subcategories based on matching rules from the YAML file."""
-        if first_time:
-            data = data.assign(
-                SUBCATEGORY="UNKNOWN",
-                CATEGORY="UNKNOWN",
-            )
-            data = data.assign(
-                SUBCATEGORY_COUNT=0,
-                CATEGORY_COUNT=0,
-            )
-
-        subcategories = self.config["SUBCATEGORIES"]
-        for (
-            subcategory,
-            matches,
-        ) in subcategories.items():  # TODO: what if string contains "|"
-            pattern = "|".join(re.escape(match) for match in matches)
-
-            cond = data["DESCRIPTION"].str.contains(pattern, na=False)
-            if first_time:
-                data.loc[
-                    cond,
-                    "SUBCATEGORY_COUNT",
-                ] += 1
-            data.loc[
-                cond,
-                "SUBCATEGORY",
-            ] = subcategory
-
-        categories = self.config["CATEGORIES"]
-        for category, matches in categories.items():
-            cond = data["SUBCATEGORY"].apply(lambda x, matches=matches: x in matches)
-            if first_time:
-                data.loc[
-                    cond,
-                    "CATEGORY_COUNT",
-                ] += 1
-            data.loc[
-                cond,
-                "CATEGORY",
-            ] = category
-        return data
-
-    def validate_data(self, data_to_validate):
-        data = data_to_validate.copy()
-        """Validates the processed data to ensure there are no duplicate categories
-        or subcategories and all transactions are categorized correctly."""
-
-        multiple_subcategories_per_transaction = data[data["SUBCATEGORY_COUNT"] > 1]
-        if multiple_subcategories_per_transaction.shape[0] != 0:
-            st.error(
-                """Some of your transactions have multiple subcategories assigned to them.
-                Please ensure that each transaction is assigned to one subcategories only."""
-            )
-            st.write(
-                multiple_subcategories_per_transaction[
-                    ["DATE", "DESCRIPTION", "AMOUNT", "SOURCE"]
-                ]
-            )
-            st.stop()
-
-        multiple_categories_per_transaction = data[data["CATEGORY_COUNT"] > 1]
-        if multiple_categories_per_transaction.shape[0] != 0:
-            st.error(
-                """Some of your transactions have multiple categories assigned to them.
-                Please ensure that each transaction is assigned to one category only."""
-            )
-            st.write(
-                multiple_categories_per_transaction[
-                    ["DATE", "DESCRIPTION", "AMOUNT", "SOURCE"]
-                ]
-            )
-            st.stop()
-
-        no_category_match = data[data["SUBCATEGORY_COUNT"] > data["CATEGORY_COUNT"]]
-        if no_category_match.shape[0] != 0:
-            st.error(
-                """Some of your subcategories have not been assigned to a category in the
-                config file."""
-            )
-            st.write(no_category_match)
-            st.stop()
-
-        unknown_filter = (
-            (data["SUBCATEGORY"] == "UNKNOWN")
-            & (data["SUBCATEGORY_COUNT"] == 0)
-            & (data["CATEGORY_COUNT"] == 0)
+def categorize_data(
+    data: pd.DataFrame, config: Dict, first_time: bool = True
+) -> pd.DataFrame:
+    """Categorize transactions by checking if a 'rule' is contained in the description column."""
+    if first_time:
+        # If it is the first time when you categorize the data, we need to add some columns.
+        # The other times (when you make corrections to the categorization afterwards), these
+        # columns should already be filled in.
+        data = data.assign(
+            SUBCATEGORY="UNKNOWN",
+            CATEGORY="UNKNOWN",
+        )
+        # These two counts should be at most 1! Otherwise mutliple rules are applied to a transaction
+        data = data.assign(
+            SUBCATEGORY_COUNT=0,
+            CATEGORY_COUNT=0,
         )
 
-        if (
-            data[unknown_filter].shape[0]
-            != data[data["SUBCATEGORY"] == "UNKNOWN"].shape[0]
-        ):
-            st.error(
-                """Your Unknown subcategory seems to have issues. Make sure you do not specify this category
-                yourself. This category will be assigned to transactions that do not match with the other categories."""
-            )  # not sure what the point of this is anymore
+        # The subcategories should always be defined based on the description
+        subcategories = config["SUBCATEGORIES"]
+        for subcategory, rules in subcategories.items():
+            all_rules = "|".join(re.escape(rule) for rule in rules)
 
-    def remove_columns(self, data):
-        """Removes columns that are not needed for the analysis."""
-        return data.drop(["SUBCATEGORY_COUNT", "CATEGORY_COUNT"], axis=1)
+            # find all
+            match_with_rule = data["DESCRIPTION"].str.contains(all_rules, na=False)
+            data.loc[match_with_rule, "SUBCATEGORY_COUNT"] += 1
+            data.loc[match_with_rule, "SUBCATEGORY"] = subcategory
 
-    def write_data(self, data, filename):
-        """Writes the processed transaction data to an Excel file with the specified filename."""
-        data = data.select(self.select_columns)
-        data.to_excel(filename, index=False)
+    # This is outside the loop because we allow people to change the subcategory
+    # after the initial categorization manually, but we force them to have the category
+    # belonging to that subcategory
+    categories = config["CATEGORIES"]
+    for category, subcategories in categories.items():
+        all_subcategories = "|".join(subcategory for subcategory in subcategories)
+        # find all transactions where the subcategory matches the
+        # subcategories of the category
+        match_with_subcategory = data["SUBCATEGORY"].str.contains(
+            all_subcategories, na=False
+        )
+        if first_time:
+            data.loc[match_with_subcategory, "CATEGORY_COUNT"] += 1
+        data.loc[match_with_subcategory, "CATEGORY"] = category
+    return data
 
-    def map_and_validate_categories(self, org_data):
-        categorized_data = self.map_categories(org_data)
-        self.validate_data(categorized_data)
-        categorized_data = self.remove_columns(categorized_data)
-        return categorized_data
 
+def validate_data_after_categorization(data_to_validate):
+    """Validates the processed data to ensure there are no duplicate categories
+    or subcategories and all transactions are categorized correctly."""
+    data = data_to_validate.copy()
 
-def get_all_sources(df):
-    """Returns a list of all sources available in the data."""
-    return sorted(df.select(source_col).unique().to_series().to_list())
+    multiple_subcategories_per_transaction = data[data["SUBCATEGORY_COUNT"] > 1]
+    if multiple_subcategories_per_transaction.shape[0] != 0:
+        st.error(
+            """Some of your transactions have multiple subcategories assigned to them.
+            Please ensure that each transaction is assigned to one subcategories only."""
+        )
+        st.write(
+            multiple_subcategories_per_transaction[
+                ["DATE", "DESCRIPTION", "AMOUNT", "SOURCE"]
+            ]
+        )
+        st.stop()
+
+    multiple_categories_per_transaction = data[data["CATEGORY_COUNT"] > 1]
+    if multiple_categories_per_transaction.shape[0] != 0:
+        st.error(
+            """Some of your transactions have multiple categories assigned to them.
+            Please ensure that each transaction is assigned to one category only."""
+        )
+        st.write(
+            multiple_categories_per_transaction[
+                ["DATE", "DESCRIPTION", "AMOUNT", "SOURCE"]
+            ]
+        )
+        st.write(multiple_categories_per_transaction)
+        st.stop()
+
+    no_category_match = data[data["SUBCATEGORY_COUNT"] > data["CATEGORY_COUNT"]]
+    if no_category_match.shape[0] != 0:
+        st.error(
+            """Some of your subcategories have not been assigned to a category in the
+            config file."""
+        )
+        st.write(no_category_match)
+        st.stop()
+
+    unknown_filter = (
+        (data["SUBCATEGORY"] == "UNKNOWN")
+        & (data["SUBCATEGORY_COUNT"] == 0)
+        & (data["CATEGORY_COUNT"] == 0)
+    )
+
+    if data[unknown_filter].shape[0] != data[data["SUBCATEGORY"] == "UNKNOWN"].shape[0]:
+        st.error(
+            """Your Unknown subcategory seems to have issues. Make sure you do not specify this category
+            yourself. This category will be assigned to transactions that do not match with the other categories."""
+        )  # not sure what the point of this is anymore
 
 
 def get_first_last_date(df):
@@ -155,6 +126,7 @@ def filter_data(data, start_date, end_date):
 
 
 def add_columns(df):
+    """Add some columns to help out with the dashboard."""
     if str(df.get_column("DATE").dtype) == "String":
         df = df.with_columns(
             [
@@ -173,7 +145,7 @@ def add_columns(df):
     return data
 
 
-def validate_data(data_to_validate):
+def validate_transactions_data(data_to_validate):
     df = data_to_validate.copy()
     if "DATE" not in df.columns:
         st.error(

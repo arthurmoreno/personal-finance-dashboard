@@ -12,4 +12,3 @@ streamlit_aggrid
 fastexcel
 pyrebase4
 extra_streamlit_components
-isort

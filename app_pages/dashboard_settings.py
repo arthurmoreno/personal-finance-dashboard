@@ -1,3 +1,6 @@
+"""The user can upload their categorized transactions here. Afrerwards, they can change some
+configurations to personalize their dashboard."""
+
 import pandas as pd
 import streamlit as st
 from streamlit_javascript import st_javascript
@@ -12,11 +15,10 @@ from utils import (
     get_number_input_options,
     paths,
     read_config,
-    save_config,
     source_col,
     subcategory_col,
     validate_dashboard_config_format,
-    validate_data,
+    validate_transactions_data,
 )
 
 
@@ -25,14 +27,8 @@ def display_header():
     st.subheader("Transactions Data")
 
 
-def _reset_dashboardconfig(user_id):
-    st.session_state.dashboardconfig = read_config(paths["default_dashboard_config"])
-    if st.session_state.cookie_manager.get(cookie="user_logged_in"):
-        st.session_state.firebase.db.child(user_id).child("DashboardConfig").remove()
-
-
 def _reload():
-    """Reload the page (to make sure person is logged off, etc.)"""
+    """Reload the page"""
     st_javascript(
         """
         window.location.reload()
@@ -43,28 +39,7 @@ def _reload():
     _reload()
 
 
-def handle_existing_data(user_id):
-    df_fetched = st.session_state.firebase.read_file(user_id, "TransactionsData")
-    if df_fetched is not None:
-        with st.expander("Your categorized transactions."):
-            st.dataframe(df_fetched)
-
-        col1, col2 = st.columns([1, 7])
-        with col1:
-            if st.button("Delete data"):
-                st.session_state.firebase.db.child(user_id).child(
-                    "TransactionsData"
-                ).remove()
-                _reset_dashboardconfig(user_id)
-                st_javascript("""window.location.reload()""")
-        with col2:
-            st.markdown("You can delete your data at any time and start over.")
-    else:
-        st.write("You do not have any data yet.")
-    return df_fetched
-
-
-def handle_file_upload(user_id, user_logged_in):
+def handle_file_upload():
     next_step = (
         "Update" if (st.session_state.get("df_fetched") is not None) else "Upload"
     )
@@ -95,14 +70,8 @@ def handle_file_upload(user_id, user_logged_in):
                     df_fetched["TAG"] = df_fetched["TAG"]
                 df_fetched = df_fetched.fillna("")
                 # we should probably not validate twice
-                validate_data(df_fetched)
+                validate_transactions_data(df_fetched)
                 st.session_state.cookie_manager.set("file_exists", True, "file_exists")
-                if user_logged_in:
-                    st.session_state.firebase.upload_file(
-                        df_fetched.to_dict(orient="records"),
-                        user_id,
-                        "TransactionsData",
-                    )
                 return df_fetched
             else:
                 st.error("Please upload a file.")
@@ -110,7 +79,7 @@ def handle_file_upload(user_id, user_logged_in):
             return None
 
 
-def display_reset_dashboardconfig_button(user_id):
+def display_reset_dashboardconfig_button():
     # Allow the user to reset the value of t he config to the default one.
     # Sometimes the configs can also give errors, this will solve these errors.
     # These errors can happen if the user changes the config, but does not
@@ -118,8 +87,9 @@ def display_reset_dashboardconfig_button(user_id):
     col1, col2 = st.columns([1, 4])
     with col1:
         if st.button("Reset config"):
-            _reset_dashboardconfig(user_id)
-
+            st.session_state.dashboardconfig = read_config(
+                paths["default_dashboard_config"]
+            )
             with col2:
                 st.success("Config reset.")
     with col2:
@@ -152,67 +122,84 @@ def handle_income_category_selection(categories, config):
     )
 
 
-def display_config_options(user_id):
+def display_config_options():
     df = st.session_state.df_fetched
-    config = st.session_state.dashboardconfig
 
     categories = sorted(df[category_col].unique())
     sources = sorted(df[source_col].unique()) + ["Total"]
 
     st.header("General Settings")
-    display_reset_dashboardconfig_button(user_id)
+    display_reset_dashboardconfig_button()
 
-    config["display_data"] = st.checkbox("Display transactions", value=True)
-    config["currency"] = st.text_input(
-        "Currency symbol", value=config.get("currency", ""), max_chars=3
+    st.session_state.dashboardconfig["display_data"] = st.checkbox(
+        "Display transactions", value=True
+    )
+    st.session_state.dashboardconfig["currency"] = st.text_input(
+        "Currency symbol",
+        value=st.session_state.dashboardconfig.get("currency", ""),
+        max_chars=3,
     )
 
     st.header("Chart Settings")
-    config["hidden_categories_from_barplot"] = get_checkbox_options(
-        categories, config, "hidden_categories_from_barplot"
+    st.session_state.dashboardconfig[
+        "hidden_categories_from_barplot"
+    ] = get_checkbox_options(
+        categories,
+        st.session_state.dashboardconfig,
+        "hidden_categories_from_barplot",
     )
 
     st.subheader("Lineplot Colors")
-    config["random_lineplot_colors"] = get_checkbox_option(
-        "Random colors", config, "random_lineplot_colors"
+    st.session_state.dashboardconfig["random_lineplot_colors"] = get_checkbox_option(
+        "Random colors", st.session_state.dashboardconfig, "random_lineplot_colors"
     )
-    config["lineplot_colors"] = (
+    st.session_state.dashboardconfig["lineplot_colors"] = (
         {}
-        if config["random_lineplot_colors"]
-        else get_color_picker_options(sources, config, "lineplot_colors")
+        if st.session_state.dashboardconfig["random_lineplot_colors"]
+        else get_color_picker_options(
+            sources, st.session_state.dashboardconfig, "lineplot_colors"
+        )
     )
     st.subheader("Lineplot Width")
-    config["lineplot_width"] = get_number_input_options(
+    st.session_state.dashboardconfig["lineplot_width"] = get_number_input_options(
         sources,
         value=3,
         min_value=1,
         max_value=10,
-        config=config,
+        config=st.session_state.dashboardconfig,
         config_name="lineplot_width",
     )
 
     st.subheader("Category Settings")
-    config["income_category"] = handle_income_category_selection(categories, config)
+    st.session_state.dashboardconfig[
+        "income_category"
+    ] = handle_income_category_selection(categories, st.session_state.dashboardconfig)
 
     st.subheader("Pieplot Colors")
-    income_sources = get_income_sources(df, config["income_category"])
-    config["pieplot_colors"] = get_color_picker_options(
-        income_sources, config, "pieplot_colors"
+    income_sources = get_income_sources(
+        df, st.session_state.dashboardconfig["income_category"]
+    )
+    st.session_state.dashboardconfig["pieplot_colors"] = get_color_picker_options(
+        income_sources, st.session_state.dashboardconfig, "pieplot_colors"
     )
 
     st.header("Financial Goals")
-    config["goals"] = get_number_input_options(
+    st.session_state.dashboardconfig["goals"] = get_number_input_options(
         categories,
         value=None,
         min_value=0,
         max_value=None,
-        config=config,
+        config=st.session_state.dashboardconfig,
         config_name="goals",
     )
-    config["goals"] = {k: v for k, v in config["goals"].items() if v is not None}
+    st.session_state.dashboardconfig["goals"] = {
+        k: v
+        for k, v in st.session_state.dashboardconfig["goals"].items()
+        if v is not None
+    }
 
-    validate_dashboard_config_format(config)
-    return config
+    validate_dashboard_config_format(st.session_state.dashboardconfig)
+    return st.session_state.dashboardconfig
 
 
 def get_income_sources(df, income_category):
@@ -220,34 +207,12 @@ def get_income_sources(df, income_category):
 
 
 display_header()
-user_logged_in = st.session_state.cookie_manager.get(cookie="user_logged_in")
-if user_logged_in:
-    # Read the data the user has stored in the database. If there is no data yet,
-    # this will be None
-    user_id = st.session_state.cookie_manager.get(cookie="user")["localId"]
-    df_fetched = handle_existing_data(user_id)
-    if df_fetched is not None:
-        st.session_state.df_fetched = df_fetched
-else:
-    user_id = None
-    df_fetched = None
 
-uploaded_df = handle_file_upload(user_id, user_logged_in)
+df_fetched = None
+
+uploaded_df = handle_file_upload()
 if uploaded_df is not None:
     st.session_state.df_fetched = uploaded_df
 if st.session_state.df_fetched is not None:
-    validate_data(st.session_state.df_fetched)
-    if user_logged_in:
-        st.session_state.dashboardconfig = st.session_state.firebase.read_file(
-            user_id, "DashboardConfig"
-        )
-        if st.session_state.dashboardconfig is None:
-            st.session_state.dashboardconfig = read_config(
-                paths["default_dashboard_config"]
-            )
-    else:
-        st.session_state.dashboardconfig = read_config(
-            paths["default_dashboard_config"]
-        )
-    updated_config = display_config_options(user_id)
-    save_config(updated_config, user_id, "DashboardConfig")
+    validate_transactions_data(st.session_state.df_fetched)
+    updated_config = display_config_options()
