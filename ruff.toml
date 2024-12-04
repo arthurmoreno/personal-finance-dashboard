@@ -1,0 +1,63 @@
+extend-include = ["*.ipynb"]
+preview = true
+line-length = 120
+indent-width = 4
+
+[format]
+preview = true
+quote-style = "single"
+indent-style = "space"
+skip-magic-trailing-comma = false
+docstring-code-format = true
+
+
+[lint]
+ignore = [
+  "RUF012",
+  "ANN",    # Mypy is better at this
+  "E722",
+  "RUF001",
+  "Q000",
+  "RET504",
+]
+select = [
+  "E",
+  "D",
+  "F",
+  "G",     # flake8-logging-format
+  "T",
+  "PERF",  # perflint
+  "RUF",   # Ruff-specific rules
+  "W6",
+  "SIM",
+  "COM",
+  "C4",
+  "W191",
+  "W291",
+  "W293",
+  "UP039", # unnecessary-class-parentheses
+  "DTZ",
+  "ISC",
+  "ICN",
+  "PIE",
+  "T20",
+  "RSE",
+  "Q",
+  "RET",
+  "TID",
+  "TC",
+  "INT",
+  "ARG",
+  "ERA",
+  "PD",
+  "R",
+  "FLY",
+  "W",
+  "NPY"
+]
+
+[lint.pydocstyle]
+convention = "google"
+
+[lint.per-file-ignores]
+"__init__.py" = ["D104"] # ignore no docstrings in __init__.py

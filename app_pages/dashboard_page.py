@@ -1,5 +1,7 @@
-"""The front page of the dashboard. After users have submited their categorized data,
-all the visualisations will come here."""
+"""The front page of the dashboard.
+
+After users have submited their categorized data, all the visualisations will come here.
+"""
 
 import polars as pl
 import streamlit as st
@@ -19,7 +21,7 @@ from utils import (
 
 _data = None
 
-if st.session_state.cookie_manager.get(cookie="file_exists"):
+if st.session_state.cookie_manager.get(cookie='file_exists'):
     # If there is a file (logged in or not), we fetch the latest data
     _data = st.session_state.df_fetched
 
@@ -56,16 +58,12 @@ if _data is not None:
     sources = display_sources(all_sources)
     income_outcome, transactions_per_category = st.columns(2)
     with income_outcome:
-        plot_dashboard_utils.display_income_outcome(
-            data, sources, time_frame_col, category_col
-        )
+        plot_dashboard_utils.display_income_outcome(data, sources, time_frame_col, category_col)
     with transactions_per_category:
-        plot_dashboard_utils.display_transactions_per_category(
-            data, category_col, time_frame_col
-        )
+        plot_dashboard_utils.display_transactions_per_category(data, category_col, time_frame_col)
 
     # Only plot the heatmap of the goals if goals are provided.
-    goals = st.session_state.dashboardconfig.get("goals")
+    goals = st.session_state.dashboardconfig.get('goals')
     if goals:
         heatmap = plot_dashboard_utils.display_goals_heatmap(data)
         heatmap

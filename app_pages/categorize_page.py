@@ -1,5 +1,5 @@
-"""
-Let user create their 'rules', which maps words in the description column to the users predefined subcategories.
+"""Let user create their 'rules', which maps words in the description column to the users predefined subcategories.
+
 The subcategories are then mapped to the users predefined categories.
 Users can either create this mapping in the UI or by passing a configuration file (.yml).
 Afterwards, users get an overview of the categorized transactions, which they can download as input for the dashboard.
@@ -44,29 +44,22 @@ st.markdown(
 yaml = YAML()
 
 
-(
-    current_structure,
-    upload_config,
-    upload_transactions,
-    categorize_transactions,
-) = st.tabs(
-    [
-        "Current Structure",
-        "Upload Config",
-        "Upload Transactions",
-        "Categorize Transactions",
-    ]
-)
+(current_structure, upload_config, upload_transactions, categorize_transactions) = st.tabs([
+    'Current Structure',
+    'Upload Config',
+    'Upload Transactions',
+    'Categorize Transactions',
+])
 
 with current_structure:
     display_current_categorization_config_structure()
     col1, col2 = st.columns([5, 1])
-    with col1.expander("Get current config (.yml):"):
+    with col1.expander('Get current config (.yml):'):
         # for a cleaner overview & let the user copy-paste this to create their own .yml
         stream = io.StringIO()
         yaml.dump(st.session_state.config_to_categorize, stream)
         yaml_str = stream.getvalue()
-        st.code(yaml_str, language="yaml")
+        st.code(yaml_str, language='yaml')
 
 
 with upload_config:
@@ -74,32 +67,26 @@ with upload_config:
         """This file will contain the rules for categorizing your transactions.
         Every transaction should only have 1 subcategory.
         Every subcategory should have exactly 1 category.""",
-        icon="ℹ️",
+        icon='ℹ️',
     )
 
     # Let user upload their configuration file and pass an example file they can download
-    with open(
-        paths["example_categories_mapping_config"],
-        "r",
-    ) as file:
+    with open(paths['example_categories_mapping_config'], 'r') as file:
         example_categories_mapping_config_data = file.read()
 
     config_path = display_get_configuration_file(
-        title="Upload categorization mapping (.yml)",
+        title='Upload categorization mapping (.yml)',
         example_file=example_categories_mapping_config_data,
     )
-    if st.button("Upload the config"):
+    if st.button('Upload the config'):
         if config_path:
             st.session_state.config_to_categorize = yaml.load(config_path)
-            for (
-                category,
-                subcategories,
-            ) in st.session_state.config_to_categorize["CATEGORIES"].items():
+            for category, subcategories in st.session_state.config_to_categorize['CATEGORIES'].items():
                 for subcategory in subcategories:
                     st.session_state._subcategory_to_category[subcategory] = category
             st.rerun()
         else:
-            st.error("Please upload a configuration file.")
+            st.error('Please upload a configuration file.')
 
 
 with upload_transactions:
@@ -107,28 +94,25 @@ with upload_transactions:
         """In order to categorize your transactions, only a description is sufficient.
         However, if you would like to use the dashboard later on, it is recommend to have
         an excel file structured like this:""",
-        icon="ℹ️",
+        icon='ℹ️',
     )
 
-    data_structure = pd.read_excel(paths["data_structure"])
+    data_structure = pd.read_excel(paths['data_structure'])
     st.dataframe(data_structure)
     # Let user upload transactions data
-    example_transactions_data = df_to_excel(
-        pd.read_excel(paths["example_transactions"])
-    )
+    example_transactions_data = df_to_excel(pd.read_excel(paths['example_transactions']))
     file_path = display_get_transactions_file(
-        title="Upload transactions (.xlsx)", example_file=example_transactions_data
+        title='Upload transactions (.xlsx)',
+        example_file=example_transactions_data,
     )
-    if st.button("Upload the file."):
+    if st.button('Upload the file.'):
         if file_path:
             st.session_state.data_to_categorize = pd.read_excel(file_path)
         else:
-            st.error("Please upload a transactions file.")
+            st.error('Please upload a transactions file.')
 
 with categorize_transactions:
-    if (st.session_state.config_to_categorize is not None) & (
-        st.session_state.data_to_categorize is not None
-    ):
+    if (st.session_state.config_to_categorize is not None) & (st.session_state.data_to_categorize is not None):
         validate_categorize_mapping_config_format(st.session_state.config_to_categorize)
         st.markdown(
             """
@@ -151,9 +135,7 @@ with categorize_transactions:
                 st.session_state.config_to_categorize,
             )
             validate_data_after_categorization(categorized_data)
-            categorized_data = categorized_data.drop(
-                ["SUBCATEGORY_COUNT", "CATEGORY_COUNT"], axis=1
-            )
+            categorized_data = categorized_data.drop(['SUBCATEGORY_COUNT', 'CATEGORY_COUNT'], axis=1)
         else:
             categorized_data = st.session_state.updated_categorized_df
 
@@ -163,17 +145,13 @@ with categorize_transactions:
         # Make the subcategory column a dropdown. Not needed for category, as it should
         # be completely dependant on subcategory.
         grid_builder.configure_column(
-            "SUBCATEGORY",
-            cellEditor="agSelectCellEditor",
-            cellEditorParams={
-                "values": sorted(
-                    set(st.session_state.config_to_categorize["SUBCATEGORIES"].keys())
-                ),
-            },
+            'SUBCATEGORY',
+            cellEditor='agSelectCellEditor',
+            cellEditorParams={'values': sorted(set(st.session_state.config_to_categorize['SUBCATEGORIES'].keys()))},
         )
         grid_options = grid_builder.build()
         # Highlight in red if category is UNKNOWN
-        grid_options["defaultColDef"]["cellStyle"] = JsCode(
+        grid_options['defaultColDef']['cellStyle'] = JsCode(
             r"""
             function(cellClassParams) {
                 if (cellClassParams.data.CATEGORY == 'UNKNOWN' || cellClassParams.data.SUBCATEGORY == 'UNKNOWN') {
@@ -181,16 +159,16 @@ with categorize_transactions:
                 }
                 return {};
                 }
-        """
+        """,
         )
         categorized_data = AgGrid(
             data=categorized_data,
             gridOptions=grid_options,
             allow_unsafe_jscode=True,
-            key=f"grid_{st.session_state.AgGrid_number}",
-        )["data"]
+            key=f'grid_{st.session_state.AgGrid_number}',
+        )['data']
 
-        if st.button("Fill in category"):
+        if st.button('Fill in category'):
             # key has to be renewed for every update
             st.session_state.AgGrid_number += 1
             # categorize again.
@@ -207,12 +185,10 @@ with categorize_transactions:
         categorized_data_excel = df_to_excel(categorized_data)
         # Create a download button
         st.download_button(
-            label="Download categorized transactions",
+            label='Download categorized transactions',
             data=categorized_data_excel,
-            file_name="categorized_transactions.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            file_name='categorized_transactions.xlsx',
+            mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         )
     else:
-        st.write(
-            "Please Upload a config/ create a current mapping structure and upload your transactions data first."
-        )
+        st.write('Please Upload a config/ create a current mapping structure and upload your transactions data first.')
