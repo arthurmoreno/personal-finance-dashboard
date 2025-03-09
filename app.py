@@ -10,16 +10,15 @@ load_maincss(paths['maincss'])
 display_contact_info()
 st.sidebar.divider()
 
+scripts = st.Page('app_pages/scripts.py', title='Scripts', icon=':material/bolt:')
+dashboard_page = st.Page('app_pages/dashboard_page.py', title='Dashboard', icon=':material/bar_chart_4_bars:')
+dashboard_settings = st.Page('app_pages/dashboard_settings.py', title='Dashboard Settings', icon=':material/bolt:')
 categorize_page = st.Page(
     'app_pages/categorize_page.py',
     title='Categorize Transactions',
     icon=':material/assignment_turned_in:',
     url_path='categorize_transactions',
 )
-
-dashboard_page = st.Page('app_pages/dashboard_page.py', title='Dashboard', icon=':material/bar_chart_4_bars:')
-
-dashboard_settings = st.Page('app_pages/dashboard_settings.py', title='Dashboard Settings', icon=':material/bolt:')
 
 privacy_policy = st.Page('app_pages/privacy_policy.py', title='Privacy policy', icon=':material/lock:')
 
@@ -57,5 +56,11 @@ if st.session_state.debug_mode:
     testing_page = st.Page('app_pages/testing.py', title='Testing', icon=':material/lock:')
 
 
-pg = st.navigation([dashboard_page, dashboard_settings, categorize_page, privacy_policy])
+pg = st.navigation([
+    scripts,
+    dashboard_page,
+    dashboard_settings,
+    categorize_page,
+    privacy_policy,
+])
 pg.run()
